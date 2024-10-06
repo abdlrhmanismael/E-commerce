@@ -1,0 +1,23 @@
+.contact {
+  .contact-img {
+    height: 400px;
+    h1 {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    img {
+      height: 100%;
+      object-fit: fill;
+    }
+  }
+  .con-info {
+    a {
+      text-decoration: none;
+      color: black;
+      &:hover {
+        border-bottom: 1px solid #cecece;
+      }
+    }
+  }
+}

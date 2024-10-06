@@ -1,0 +1,27 @@
+.pagiweb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  .pagili {
+    padding: 0.3rem 0.5rem;
+    font-size: 17px;
+    margin: 0.5rem;
+  }
+  .selected {
+    color: white;
+    background-color: #808380;
+  }
+  .next {
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+  .previous {
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+}

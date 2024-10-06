@@ -1,0 +1,55 @@
+.itemslider {
+  overflow-x: scroll;
+  width: 300px;
+}
+.itemslider::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.itemslider::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.itemslider::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px; /* Make the thumb rounded */
+}
+.itemslider::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.disactive {
+  color: gray;
+  cursor: not-allowed;
+}
+.item-des {
+  p {
+    letter-spacing: 0.1rem;
+
+    span {
+      letter-spacing: 0.1rem;
+    }
+  }
+  .tax {
+    font-size: 0.8rem;
+  }
+  .sel {
+    select {
+      height: 43px;
+      color: gray;
+      padding: 10px;
+      border-color: #a5a5a5;
+      font-size: 12px;
+    }
+    select:hover {
+      border-width: 2px;
+      outline: none;
+    }
+  }
+}
+.letter-wide {
+  letter-spacing: 0.3rem;
+}
+.item-img {
+  .active {
+    border: 1px solid black;
+  }
+}

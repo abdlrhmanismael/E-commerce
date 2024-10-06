@@ -1,0 +1,31 @@
+input[type="checkbox"] {
+  appearance: none;
+  cursor: pointer;
+}
+.customcheck {
+  & input:checked ~ .checkmark::before {
+    opacity: 1;
+  }
+  & .checkmark {
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    height: 15px;
+    width: 15px;
+    border: 1px solid #cecece;
+    margin-top: -7.5px;
+    cursor: pointer;
+    &::before {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background-color: black;
+      margin-left: 50%;
+      margin-top: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: 0.2s;
+    }
+  }
+}

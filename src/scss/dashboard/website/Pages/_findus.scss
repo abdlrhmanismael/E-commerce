@@ -1,0 +1,44 @@
+.findus {
+  height: 650px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  video {
+    object-fit: cover;
+    position: absolute;
+  }
+  .findinfo {
+    position: absolute;
+    h1 {
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+    }
+    a {
+      background-color: #1a1a19;
+      color: white;
+      border-radius: 0;
+      padding: 0.4rem 2.5rem;
+      width: 100%;
+      margin-top: 1rem;
+      letter-spacing: 0.2rem;
+      font-size: 0.9rem;
+    }
+  }
+}
+@media (max-width: 750px) {
+  .findus {
+    video {
+      position: relative;
+    }
+    .findinfo {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+  }
+}

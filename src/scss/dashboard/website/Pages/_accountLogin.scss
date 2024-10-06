@@ -1,0 +1,32 @@
+.account-sign {
+  div {
+    width: 550px;
+
+    p {
+      letter-spacing: 0.1rem;
+      color: gray;
+      a {
+        text-decoration: none;
+        color: black;
+      }
+    }
+  }
+}
+@media (max-width: 576px) {
+  .account-sign {
+    div {
+      width: auto;
+    }
+  }
+}
+.web-input {
+  display: block;
+  width: 100%;
+  margin: 1.3rem 0;
+  padding: 0.5rem;
+  border: 1px solid #cecece;
+  outline: none;
+}
+.invalid {
+  border: 1px solid red;
+}

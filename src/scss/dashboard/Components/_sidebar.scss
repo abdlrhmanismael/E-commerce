@@ -1,0 +1,66 @@
+.sidebar {
+  background-color: #272627;
+  min-height: 100vh;
+  z-index: 9999999;
+  width: 400px;
+  transition: width 0.6s;
+
+  .user {
+    width: 100%;
+    margin-bottom: 20px;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    .info {
+      .name {
+        color: #fdfcfc;
+      }
+      .email {
+        color: #c1c1c1;
+      }
+    }
+    .role {
+      p {
+        background-color: #4d332d;
+        color: #fe7049;
+      }
+    }
+    animation: show 1s forwards;
+  }
+
+  .sidebarList {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  a {
+    color: #ededed;
+    text-decoration: none;
+    margin-bottom: 15px;
+    transition: 0.6s;
+    padding: 10px;
+
+    span {
+      transition: 0.6s;
+    }
+  }
+  a.active {
+    background-color: #343534;
+  }
+  .left {
+    background-color: #343534;
+    width: fit-content;
+    width: 35px;
+    padding: 10px;
+  }
+  .logout {
+    background-color: #343534;
+    color: white;
+  }
+}
+@media (max-width: 576px) {
+  .sidebar {
+    width: 100%;
+  }
+}

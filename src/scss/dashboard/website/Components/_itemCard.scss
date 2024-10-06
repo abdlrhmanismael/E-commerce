@@ -1,0 +1,39 @@
+.newitemcard {
+  a {
+    text-decoration: none;
+    color: black;
+    letter-spacing: 0.1rem;
+
+    .img:hover .imgtwo {
+      opacity: 1;
+    }
+    .img {
+      height: 400px;
+      position: relative;
+
+      img {
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .imgtwo {
+        left: 0;
+        opacity: 0;
+        transition: 0.5s;
+      }
+    }
+    .iteminfo {
+      .sitename {
+        margin-bottom: 0;
+        font-size: 13px;
+        color: #585b5c;
+      }
+      .title {
+        margin-top: 0.5rem;
+        margin-bottom: 0.3rem;
+      }
+      .price {
+      }
+    }
+  }
+}

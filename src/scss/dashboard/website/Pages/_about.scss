@@ -1,0 +1,64 @@
+.about {
+  display: flex;
+  .video-info {
+    width: 100%;
+    height: 700px;
+    video {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .sale {
+    p {
+      letter-spacing: 0.2rem;
+      color: gray;
+    }
+    h2 {
+      font-size: 2.3rem;
+    }
+    a,
+    .prim-btn {
+      padding: 0.8rem 4rem;
+      background-color: #d72d0c;
+      color: white;
+      margin-top: 2rem;
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      span {
+        z-index: 20;
+      }
+      &::after {
+        background: #fff;
+        content: "";
+        height: 155px;
+        left: -75px;
+        opacity: 0.2;
+        position: absolute;
+        top: -50px;
+        transform: rotate(35deg);
+        transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+        width: 50px;
+        z-index: 99999;
+      }
+      &:hover::after {
+        left: 120%;
+        transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+      }
+    }
+  }
+}
+@media (max-width: 750px) {
+  .about {
+    display: block;
+    .video-info {
+      width: 100%;
+      height: auto;
+      margin: 2rem auto;
+      video {
+        width: 100%;
+        height: 500px;
+      }
+    }
+  }
+}

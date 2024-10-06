@@ -1,0 +1,89 @@
+.center-page {
+  height: calc(100vh - 72px);
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #141415;
+  .form {
+    background-color: #262727;
+    width: 80%;
+    .formDesign {
+      background-color: #262727;
+      background-image: url("../../../../src/Dasboard/register.png");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .formInfo {
+      background-color: #262727;
+      .progress {
+        width: 33%;
+        height: 0.3rem !important;
+      }
+      .progressWeak {
+        background-color: red !important;
+      }
+      .progressGood {
+        background-color: #ffc701 !important;
+      }
+      .progressStrong {
+        background-color: #419a44 !important;
+      }
+      input {
+        color: white !important;
+        background-color: transparent !important;
+        border-color: #4d4d4c !important;
+        border-width: 2px !important;
+        padding: 0.6rem !important;
+      }
+      input::placeholder {
+        color: #444547 !important;
+      }
+      label {
+        color: white;
+        background-color: #262727;
+        top: 5px;
+        left: 12px;
+        padding: 0 3px;
+      }
+      input + label {
+        transition-duration: 0.2s;
+        opacity: 0;
+        z-index: -1;
+      }
+      input:focus + label {
+        top: -15px;
+        opacity: 1;
+        z-index: 1;
+      }
+      input:focus::placeholder {
+        opacity: 0;
+      }
+      .iconLock {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        color: #4c4c4d;
+      }
+    }
+  }
+}
+@media (max-width: 576px) {
+  .form {
+    display: block !important;
+    p {
+      font-size: 11px;
+    }
+  }
+  .formDesign {
+    display: none;
+  }
+  .formInfo {
+    padding: 1rem !important;
+  }
+  .formInfo {
+    width: 100% !important;
+  }
+}

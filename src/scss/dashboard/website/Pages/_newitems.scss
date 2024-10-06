@@ -1,0 +1,9 @@
+.newitems {
+  overflow-x: scroll;
+}
+@media (min-width: 990px) {
+  .newitems {
+    flex-wrap: wrap;
+    overflow: auto;
+  }
+}
