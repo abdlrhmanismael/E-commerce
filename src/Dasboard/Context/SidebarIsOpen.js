@@ -7,8 +7,12 @@ export const useSidebar = () => useContext(SidebarContext);
 export const SidebarProvider = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+  const toggleSidebar = (close) => {
+    if (close === true) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(!isSidebarOpen);
+    }
   };
 
   return (

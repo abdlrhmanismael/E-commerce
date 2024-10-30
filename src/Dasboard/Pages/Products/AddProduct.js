@@ -3,19 +3,23 @@ import { useSidebar } from "../../Context/SidebarIsOpen";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Axios } from "../../Axios/axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddProduct() {
   const { isSidebarOpen } = useSidebar();
   const [categories, setCategories] = useState([]);
   const [submit, setSubmit] = useState(true);
   const [form, setForm] = useState({
-    category: "" || null,
-    title: "",
-    description: "",
-    About: "",
-    price: "",
-    discount: "",
+    ProductTypeID: "" || null,
+    Name: "",
+    Description: "",
+    SmallDescription: "scd",
+    Price: "",
+    Discount: "",
+    SellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
   });
+
   const j = useRef(-1);
   const [imgId, SetImgId] = useState([]);
 
@@ -28,26 +32,30 @@ export default function AddProduct() {
     discount: "3",
   });
   const progdiv = useRef([]);
-  const [images, setimages] = useState([]);
-  const [sent, setSent] = useState(false);
+  const [images, setImages] = useState([]);
+  const [sent, setSent] = useState(true);
   const [sentButton, setSentButton] = useState(false);
   const [id, setId] = useState([]);
-  //get categories
+
+  // Get categories
   async function getcat() {
     try {
-      await Axios.get(`categories?limit=0&page=0`).then((data) => {
+      await Axios.get(`RefProductType/GetAll`).then((data) => {
         setCategories(data.data);
       });
     } catch (err) {}
   }
+
   useEffect(() => {
     getcat();
   }, []);
+
   const showCategories = categories.map((category, key) => (
-    <option key={key} value={category.id}>
-      {category.title}
+    <option key={key} value={category.productTypeID}>
+      {category.productTypeName}
     </option>
   ));
+
   useEffect(() => {
     form.title === "" ||
     form.description === "" ||
@@ -66,7 +74,7 @@ export default function AddProduct() {
     images,
   ]);
 
-  //handle add Fakre product
+  // Handle add Fake product
   async function AddFakeProduct(e) {
     setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
 
@@ -78,18 +86,47 @@ export default function AddProduct() {
       console.log(err);
     }
   }
-  //handle Add Product
+
+  // Handle Add Product
   async function AddProduct(e) {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("ProductTypeID", form.ProductTypeID);
+    formData.append("Name", form.Name);
+    formData.append("Description", form.Description);
+    formData.append("SmallDescription", form.SmallDescription);
+    formData.append("Price", form.Price);
+    formData.append("Discount", form.Discount);
+    formData.append("SellerID", form.SellerID);
+    images.forEach((image) => formData.append("ProductImages", image));
+    setSentButton(true);
+
     try {
-      await Axios.post(`product/edit/${id}`, form);
-      window.location.pathname = "/products";
+      await Axios.post("Product/Add", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success("Product added successfully!", { position: "top-right" });
+      setForm({
+        ProductTypeID: "" || null,
+        Name: "",
+        Description: "",
+        SmallDescription: "",
+        Price: "",
+        Discount: "",
+        SellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
+      });
+      setImages([]);
+      setSent(false);
+      setSentButton(false);
     } catch (err) {
-      console.log(err);
-    } finally {
-      setSentButton(true);
+      console.error(err);
+      toast.error(`Error: ${err.message}`, { position: "top-right" });
+      setSentButton(false);
     }
   }
+
   function formatBytes(bytes) {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -97,6 +134,7 @@ export default function AddProduct() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
+
   const showimages = images.map((image, key) => (
     <div className="card mb-3" key={key}>
       <div className="card-body d-flex ">
@@ -126,7 +164,8 @@ export default function AddProduct() {
           >
             <div
               className="progress-bar"
-              ref={(e) => (progdiv.current[key] = e)}
+              ref={(el) => (progdiv.current[key] = el)} // Ensure this is set correctly for each image
+              style={{ width: "0%" }}
             ></div>
           </div>
         </div>
@@ -134,11 +173,11 @@ export default function AddProduct() {
     </div>
   ));
 
-  //hanle delete image
+  // Handle delete image
   async function DeleteImage(index) {
     try {
       await Axios.delete(`product-img/${imgId[index]}`);
-      setimages((prevImages) => prevImages.filter((_, i) => i !== index));
+      setImages((prevImages) => prevImages.filter((_, i) => i !== index));
       SetImgId((prevIds) => prevIds.filter((_, i) => i !== index));
       j.current -= 1;
     } catch (err) {
@@ -146,155 +185,145 @@ export default function AddProduct() {
     }
   }
 
-  //   handle add image
-  async function AddImages(e) {
-    setimages((prev) => [...prev, ...e.target.files]);
-    const tempImages = e.target.files;
-    const data = new FormData();
-    for (let index = 0; index < tempImages.length; index++) {
-      j.current = j.current + 1;
-      data.append("image", tempImages[index]);
-      data.append("product_id", id);
-      try {
-        let res = await Axios.post(`product-img/add`, data, {
-          onUploadProgress: (progressEvent) => {
-            const loaded = Math.floor(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            progdiv.current[j.current].style.width = `${loaded}%`;
-            progdiv.current[j.current].textContent = `${loaded}%`;
-          },
-        });
-
-        SetImgId((prev) => [...prev, res.data.id]);
-      } catch (err) {
-        console.log(err);
-      }
-      // انتظار فاصل زمني بين رفع كل صورة
-      await new Promise((resolve) => setTimeout(resolve, 800));
-    }
+  // Handle add image
+  function AddImages(e) {
+    const selectedFiles = Array.from(e.target.files);
+    setImages(selectedFiles);
   }
-  //handle form
+  // Handle form
   function handleForm(e) {
     setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   }
+
   return (
     <>
-      <div
-        className="addcategories  justify-content-center  flex-grow-1  flex-column"
-        style={{
-          width: !isSidebarOpen ? "80%" : "0",
-        }}
-      >
-        <h1 className="mb-3 p-3">Add Product!</h1>
+      <div className="addcategories justify-content-center flex-grow-1 flex-column w-100 border border-dark-subtle rounded-3">
+        <h3 className="mb-1 ms-2 p-2 text-black">Add Product!</h3>
         <form className="w-100 p-3" onSubmit={AddProduct}>
-          <select
-            className="form-select"
-            defaultValue="0"
-            onChange={AddFakeProduct}
-            id="category"
-          >
-            <option value="0" disabled>
-              Select Category
-            </option>
-            {showCategories}
-          </select>
+          <div className="row">
+            <div className="">
+              <label
+                htmlFor="category"
+                className="form-label text-black fw-bold"
+              >
+                Category
+              </label>
+              <select
+                className="form-select"
+                defaultValue="0"
+                onChange={handleForm}
+                id="ProductTypeID"
+              >
+                <option value="0">Select Category</option>
+                {showCategories}
+              </select>
+            </div>
 
-          <div className="mb-3">
-            <label htmlFor="title" className="form-label">
-              Title
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="title"
-              required
-              value={form.title}
-              onChange={handleForm}
-              disabled={sent ? false : true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">
-              Description
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="description"
-              required
-              value={form.description}
-              onChange={handleForm}
-              disabled={sent ? false : true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="About" className="form-label">
-              About
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="About"
-              required
-              value={form.About}
-              onChange={handleForm}
-              disabled={sent ? false : true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="price" className="form-label">
-              Price
-            </label>
-            <input
-              type="number"
-              className="form-control"
-              id="price"
-              required
-              value={form.price}
-              onChange={handleForm}
-              disabled={sent ? false : true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="discount" className="form-label">
-              Discount
-            </label>
-            <input
-              type="number"
-              className="form-control"
-              id="discount"
-              required
-              value={form.discount}
-              onChange={handleForm}
-              disabled={sent ? false : true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="images" className="form-label">
-              Images
-            </label>
-            <input
-              className="form-control"
-              type="file"
-              id="images"
-              multiple
-              onChange={AddImages}
-              disabled={sent ? false : true}
-            />
-          </div>
-          {/* image here */}
-          {showimages}
-          <div className="text-center ">
+            <div className="mb-3 mt-2 ">
+              <label htmlFor="title" className="form-label text-black fw-bold">
+                Title
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="Name"
+                required
+                value={form.Name}
+                onChange={handleForm}
+                disabled={sent ? false : true}
+              />
+            </div>
+            <div className="mb-3">
+              <label
+                htmlFor="description"
+                className="form-label text-black fw-bold"
+              >
+                Description
+              </label>
+              <textarea
+                className="form-control"
+                id="Description"
+                rows="3"
+                required
+                value={form.Description}
+                onChange={handleForm}
+                disabled={sent ? false : true}
+              />
+            </div>
+            <div className="mb-3">
+              <label
+                htmlFor="SmallDescription "
+                className="form-label text-black fw-bold"
+              >
+                Small Description
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="SmallDescription "
+                rows="3"
+                value={form.SmallDescription}
+                onChange={handleForm}
+                disabled={sent ? false : true}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="price" className="form-label text-black fw-bold">
+                Price
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="Price"
+                required
+                value={form.Price}
+                onChange={handleForm}
+                disabled={sent ? false : true}
+              />
+            </div>
+            <div className="mb-3">
+              <label
+                htmlFor="discount"
+                className="form-label text-black fw-bold"
+              >
+                Discount
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="Discount"
+                required
+                value={form.Discount}
+                onChange={handleForm}
+                disabled={sent ? false : true}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="formFileMultiple" className="form-label">
+                Multiple file input example
+              </label>
+              <input
+                className="form-control"
+                type="file"
+                id="formFileMultiple"
+                multiple
+                onChange={AddImages}
+                disabled={sent ? false : true}
+              />
+            </div>
+
+            <div className="mb-3">{showimages}</div>
+
             <button
               type="submit"
-              className="btn btn-primary fs-5"
-              disabled={sent && submit && !sentButton ? false : true}
+              className="btn btn-primary"
+              // disabled={!submit || sentButton}
             >
-              Submit
+              {sentButton ? "Loading..." : "Submit"}
             </button>
           </div>
         </form>
+        <ToastContainer />
       </div>
     </>
   );

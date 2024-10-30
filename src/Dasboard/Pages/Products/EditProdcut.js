@@ -5,31 +5,32 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import Loading from "../../Components/Loading";
 import { Axios } from "../../Axios/axios";
+import { toast } from "react-toastify";
 
 export default function Try() {
   const { isSidebarOpen } = useSidebar();
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({
-    category: "" || null,
-    title: "",
+    productTypeID: "" || null,
+    name: "",
     description: "",
-    About: "",
+    smallDescription: "",
     price: "",
     discount: "",
+    productImages: [],
+    sellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
   });
   const j = useRef(-1);
-  const [imgIdFromServer, SetimgIdFromServer] = useState([]);
   const progdiv = useRef([]);
-  const [imagesFromServer, setimagesFromServer] = useState([]);
-  const [images, setimages] = useState([]);
+  const [images, setimages] = useState([] || null);
   const { id } = useParams();
-  const [imageId, setImageId] = useState([]);
+  const [deletedImageIds, setDeletedImageIds] = useState([]); // Add state for deleted image IDs
   const [loading, setLoading] = useState(true);
 
   //get categories
   async function getcat() {
     try {
-      const response = await Axios.get(`categories`);
+      const response = await Axios.get(`RefProductType/GetAll`);
       setCategories(response.data);
     } catch (err) {
       console.log(err);
@@ -40,12 +41,9 @@ export default function Try() {
   //get product
   async function getprod() {
     try {
-      const response = await Axios.get(`product/${id}`);
-      setForm(response.data[0]);
-      setimagesFromServer(response.data[0].images);
-      response.data[0].images.forEach((image) =>
-        SetimgIdFromServer((prev) => [...prev, image.id])
-      );
+      const response = await Axios.get(`Product/GetByID?ID=${id}`);
+      setForm(response.data);
+
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -59,8 +57,8 @@ export default function Try() {
   }, []);
 
   const showCategories = categories.map((category, key) => (
-    <option key={key} value={category.id}>
-      {category.title}
+    <option key={key} value={category.productTypeID}>
+      {category.productTypeName}
     </option>
   ));
 
@@ -68,45 +66,36 @@ export default function Try() {
   async function EditProduct(e) {
     e.preventDefault();
 
-    // Upload images to backend when submitting
-    for (let index = 0; index < images.length; index++) {
-      const data = new FormData();
-      j.current = j.current + 1;
-      data.append("image", images[index]);
-      data.append("product_id", id);
-      try {
-        const res = await Axios.post(`product-img/add`, data, {
-          onUploadProgress: (progressEvent) => {
-            const loaded = Math.floor(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            progdiv.current[j.current].style.width = `${loaded}%`;
-            progdiv.current[j.current].textContent = `${loaded}%`;
-          },
-        });
-        console.log(res);
-      } catch (err) {
-        console.log(err);
-      }
-      await new Promise((resolve) => setTimeout(resolve, 800)); // Wait for 800 milliseconds between uploads
-    }
+    const formData = new FormData();
+    images.forEach((image) => formData.append("ProductImages", image));
+    const removeImagesIDs = deletedImageIds; // Example: [17, 11]
 
-    // Delete images from backend when submitting
-    for (let index = 0; index < imageId.length; index++) {
-      try {
-        const res = await Axios.delete(`product-img/${imageId[index]}`);
-        console.log(res);
-      } catch (err) {
-        console.log(err);
-      }
-    }
+    // Construct the RemoveImagesIDs query parameter
+    const removeImagesParams = removeImagesIDs
+      .map((id) => `RemoveImagesIDs=${id}`)
+      .join("&");
 
-    // Edit form in backend when submitting
+    const url = `https://thisisanecommerce.runasp.net/api/Product/Update?ID=${id}&${removeImagesParams}&&ProductTypeID=${form.productTypeID}&Name=${form.name}&Description=${form.description}&SmallDescription=${form.smallDescription}&Price=${form.price}&Discount=${form.discount}&SellerID=${form.sellerID}`;
+
     try {
-      await Axios.post(`product/edit/${id}`, form);
+      await Axios.put(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success("Product added successfully!", { position: "top-right" });
+      setForm({
+        ProductTypeID: "" || null,
+        Name: "",
+        Description: "",
+        SmallDescription: "",
+        Price: "",
+        Discount: "",
+        SellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
+      });
       window.location.pathname = "/products";
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      toast.error(`Error: ${err.message}`, { position: "top-right" });
     }
   }
 
@@ -119,11 +108,11 @@ export default function Try() {
   }
 
   // Show server images
-  const showImagesFromServer = imagesFromServer.map((image, key) => (
+  const showImagesFromServer = (form.productImages || []).map((image, key) => (
     <div className=" mb-3" key={key}>
       <div className=" d-flex ">
         <img
-          src={image.image}
+          src={image.imageUrl}
           className="card-img-top me-3"
           alt="..."
           style={{ width: "80px" }}
@@ -163,26 +152,29 @@ export default function Try() {
               onClick={() => setimages(images.filter((_, i) => key !== i))}
             />
           </div>
-
-          <div
-            className="progress"
-            role="progressbar"
-            aria-label="Example with label"
-          >
-            <div
-              className="progress-bar"
-              ref={(e) => (progdiv.current[key] = e)}
-            ></div>
-          </div>
         </div>
       </div>
     </div>
   ));
 
   // Handle delete image from server from frontend
-  async function DeleteImagefromserver(index) {
-    setImageId((prev) => [...prev, imagesFromServer[index].id]);
-    setimagesFromServer((prev) => prev.filter((_, i) => i !== index));
+  function DeleteImagefromserver(index) {
+    // Assuming each image has an `id`
+    const imageId = form.productImages[index].productImageID;
+    // console.log(imageId);
+
+    // Update the deletedImageIds state with the new ID
+    setDeletedImageIds((prev) => {
+      // Create a new array with the added ID
+      const updatedDeletedIds = [...prev, imageId];
+      return updatedDeletedIds; // Return the updated array to set the state
+    });
+
+    setForm((prevForm) => ({
+      ...prevForm,
+      productImages: prevForm.productImages.filter((_, i) => i !== index),
+    }));
+    console.log(deletedImageIds);
   }
 
   // Handle add image
@@ -199,13 +191,7 @@ export default function Try() {
     <Loading />
   ) : (
     <>
-      <div
-        className="addcategories  justify-content-center  flex-grow-1  flex-column"
-        style={{
-          opacity: isSidebarOpen ? "0" : "1",
-          width: !isSidebarOpen ? "80%" : "0",
-        }}
-      >
+      <div className="addcategories  justify-content-center  flex-grow-1  flex-column w-100">
         <h1
           className="mb-3 p-3"
           style={{
@@ -217,13 +203,11 @@ export default function Try() {
         <form className="w-100 p-3" onSubmit={EditProduct}>
           <select
             className="form-select"
-            defaultValue={form.category}
-            id="category"
+            defaultValue={form.productTypeID}
             onChange={handleForm}
+            id="ProductTypeID"
           >
-            <option value="0" disabled>
-              Select Category
-            </option>
+            <option value="0">Select Category</option>
             {showCategories}
           </select>
 
@@ -234,9 +218,9 @@ export default function Try() {
             <input
               type="text"
               className="form-control"
-              id="title"
+              id="name"
               required
-              value={form.title}
+              value={form.name}
               onChange={handleForm}
             />
           </div>
@@ -255,14 +239,14 @@ export default function Try() {
           </div>
           <div className="mb-3">
             <label htmlFor="About" className="form-label">
-              About
+              small Description
             </label>
             <input
               type="text"
               className="form-control"
-              id="About"
+              id="smallDescription"
               required
-              value={form.About}
+              value={form.smallDescription}
               onChange={handleForm}
             />
           </div>

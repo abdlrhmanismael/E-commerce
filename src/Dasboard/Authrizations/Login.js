@@ -21,9 +21,14 @@ export default function Login() {
   async function submit(e) {
     e.preventDefault();
     try {
-      let res = await axios.post("http://127.0.0.1:8000/api/login", form);
-      const role = res.data.user.role;
-      if (role === "1995") {
+      let res = await axios.post(
+        "https://thisisanecommerce.runasp.net/api/Login/Login",
+        form
+      );
+      console.log(res);
+
+      const role = res.data.roles[0];
+      if (role === "admin") {
         cookie.set("Bearer", res.data.token);
         window.location.pathname = "/";
       } else {
@@ -32,6 +37,7 @@ export default function Login() {
       }
     } catch (err) {
       setEmailErr(err.response.status);
+      console.log(emaillerr);
     }
   }
   //password icon change
@@ -47,7 +53,7 @@ export default function Login() {
           <div className="formDesign rounded-start-5 w-50 "></div>
           <div className="formInfo mt-3 w-50 p-5 rounded-5">
             <h2 className="text-white mb-3">Create Your Account</h2>
-            {emaillerr === 401 && (
+            {emaillerr === 400 && (
               <p className="text-danger">email or password is incorrect</p>
             )}
             <form onSubmit={submit}>

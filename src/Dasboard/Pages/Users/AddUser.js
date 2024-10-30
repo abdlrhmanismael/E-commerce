@@ -1,25 +1,57 @@
 import { useState } from "react";
 import { useSidebar } from "../../Context/SidebarIsOpen";
 import { Axios } from "../../Axios/axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddUser() {
   const { isSidebarOpen } = useSidebar();
   const [form, setform] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
+    username: "",
     email: "",
     password: "",
-    role: "0",
+    phoneNumber: "",
   });
 
   //handle edit user
   async function EditUser(e) {
     e.preventDefault();
-
     try {
-      await Axios.post(`user/add`, form);
-      window.location.pathname = "/users";
+      const newForm = {
+        userRegister: {
+          ...form,
+          address: {
+            street: "zag",
+            city: "string",
+            state: "string",
+            postalCode: 12345,
+            country: "string",
+          },
+          // dateCreated: "2024-10-29T17:45:06.747Z",
+          // isActive: true,
+        },
+        // lastLogin: "2024-10-29T17:45:06.747Z",
+        adminNotes: "string",
+      };
+      await Axios.post(`Admin/AdminRegister`, newForm);
+      toast.success("Added", {
+        position: "top-right",
+      });
+      setform({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+      });
     } catch (err) {
       console.log(err);
+      toast.error(`${err.response.data}`, {
+        position: "top-right",
+      });
     }
   }
   //handle form
@@ -29,42 +61,44 @@ export default function AddUser() {
 
   return (
     <>
-      <div
-        className="  addcategories  justify-content-center  flex-grow-1  flex-column"
-        style={{
-          width: !isSidebarOpen ? "80%" : "0",
-        }}
-      >
-        <h1
-          className=" "
+      <div className="  addcategories  justify-content-center  flex-grow-1  flex-column p-4 w-100 border border-dark-subtle rounded-3">
+        <h3
+          className="mb-1  p-2 text-black"
           style={{
             width: !isSidebarOpen ? "80%" : "100%",
           }}
         >
-          Add User!
-        </h1>
-        <form
-          onSubmit={EditUser}
-          className="w-100"
-          style={{
-            width: !isSidebarOpen ? "80%" : "0",
-          }}
-        >
+          Add Admin!
+        </h3>
+        <form onSubmit={EditUser} className="w-100" style={{}}>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">
-              Name
+            <label htmlFor="name" className="form-label text-black ">
+              first Name
             </label>
             <input
               type="text"
               className="form-control"
-              id="name"
-              value={form.name || ""}
+              id="firstName"
+              value={form.firstName || ""}
               onChange={handleForm}
               required
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="email" className="form-label">
+            <label htmlFor="name" className="form-label text-black ">
+              lastName
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="lastName"
+              value={form.lastName || ""}
+              onChange={handleForm}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label text-black">
               Email address
             </label>
             <input
@@ -77,7 +111,33 @@ export default function AddUser() {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="password" className="form-label">
+            <label htmlFor="email" className="form-label text-black">
+              username
+            </label>
+            <input
+              type="username"
+              className="form-control"
+              id="username"
+              value={form.username || ""}
+              onChange={handleForm}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label text-black">
+              phone Number
+            </label>
+            <input
+              type="username"
+              className="form-control"
+              id="phoneNumber"
+              value={form.phoneNumber || ""}
+              onChange={handleForm}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label text-black ">
               Password
             </label>
             <input
@@ -89,22 +149,7 @@ export default function AddUser() {
               required
             />
           </div>
-          <label htmlFor="role" className="form-label">
-            Role
-          </label>
-          <select
-            className="form-select mb-3"
-            id="role"
-            onChange={handleForm}
-            value={form.role}
-          >
-            <option value="0" disabled>
-              Select Role
-            </option>
-            <option value="1995">Admin</option>
-            <option value="1996">Writer</option>
-            <option value="2001">User</option>
-          </select>
+
           <div className="text-center ">
             <button
               type="submit"
@@ -116,6 +161,7 @@ export default function AddUser() {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </>
   );
 }

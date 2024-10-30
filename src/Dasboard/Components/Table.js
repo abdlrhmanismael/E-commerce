@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useWindowWidth } from "../Context/GetWidth";
 import { useSidebar } from "../Context/SidebarIsOpen";
 import Pagination from "./Pagination";
-import TransferDate from "../../helpers/TranferDate";
+import TransferDate from "../../helpers/TransferTableDate";
 import { Axios } from "../Axios/axios";
 
 export default function Table(props) {
@@ -14,7 +14,7 @@ export default function Table(props) {
   const token = cookie.get("Bearer");
   const [usernow, setUserNow] = useState("");
   const [items, setItems] = useState([]);
-  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingUser, setLoadingUser] = useState(false);
   const [loadingTable, setLoadingTable] = useState(false);
   const { isSidebarOpen } = useSidebar();
   const windowWidth = useWindowWidth();
@@ -30,17 +30,19 @@ export default function Table(props) {
   const whichData =
     filteredDate.length > 0 || date !== "" ? filteredDate : filtered;
   //get usernow
-  async function getUsernow() {
-    try {
-      await Axios.get("user").then((data) => {
-        setUserNow(data.data.name);
-      });
-    } catch (err) {
-    } finally {
-      setLoadingUser(false);
-    }
-  }
-
+  // async function getUsernow() {
+  //   try {
+  //     await Axios.get("user").then((data) => {
+  //       setUserNow(data.data.name);
+  //     });
+  //   } catch (err) {
+  //   } finally {
+  //     setLoadingUser(false);
+  //   }
+  // }
+  // useEffect(() => {
+  //   getUsernow();
+  // }, []);
   //handle delete
   async function handleDelete(id) {
     try {
@@ -48,9 +50,7 @@ export default function Table(props) {
       setItems(items.filter((user) => user.id !== id));
     } catch (err) {}
   }
-  useEffect(() => {
-    getUsernow();
-  }, []);
+
   //get items
   useEffect(() => {
     setLoadingTable(true);
@@ -137,7 +137,7 @@ export default function Table(props) {
         className={
           isSidebarOpen && windowWidth < 480
             ? "table-responsive w-100 vh-100"
-            : "table-responsive p-2 w-100 vh-100"
+            : "table-responsive p-2 w-100 "
         }
         style={{ display: isSidebarOpen && windowWidth < 480 && "none" }}
       >

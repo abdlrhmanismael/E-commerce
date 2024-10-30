@@ -1,65 +1,54 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "../../Context/SidebarIsOpen";
 import { Axios } from "../../Axios/axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function AddCategories() {
   const { isSidebarOpen } = useSidebar();
   const [title, setTitle] = useState("");
   const [image, setimage] = useState("");
-  const [form, setForm] = useState(new FormData());
+  const [form, setForm] = useState({
+    productTypeName: "",
+  });
 
-  form.append(title, "title");
-  form.append(image, "image");
   //handle add user
   async function addcat(e) {
     e.preventDefault();
 
     try {
-      await Axios.post(`category/add`, form);
-      window.location.pathname = "/categories";
+      await Axios.post(`/RefProductType/Add`, form);
+      toast.success("Added", {
+        position: "top-right",
+      });
     } catch (err) {
       console.log(err);
+      toast.error(`${err.response.data}`, {
+        position: "top-right",
+      });
     }
   }
   //handle form
-  function handleForm() {
-    form.append("title", title);
-    form.append("image", image);
+  function handleForm(e) {
+    setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   }
-  useEffect(() => {
-    handleForm();
-  }, [title, image]);
+
   return (
     <>
-      <div
-        className="addcategories  justify-content-center  flex-grow-1  flex-column h-full overflow-hidden"
-        style={{
-          width: !isSidebarOpen ? "80%" : "0",
-        }}
-      >
-        <h1 className="mb-3 p-3">Add Category!</h1>
+      <div className="addcategories  justify-content-center  flex-grow-1  flex-column h-full overflow-hidden w-100 border border-dark-subtle rounded-3">
+        <h3 className="mb-1 ms-2 p-2 text-black">Add Category!</h3>
         <form onSubmit={addcat} className="w-100 p-3">
           <div className="mb-3">
-            <label htmlFor="Title" className="form-label">
+            <label htmlFor="Title" className="form-label text-black">
               Title
             </label>
             <input
               type="text"
               className="form-control"
-              id="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              id="productTypeName"
+              value={form.productTypeName}
+              onChange={handleForm}
               required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="formFile" className="form-label">
-              Default file input example
-            </label>
-            <input
-              className="form-control"
-              type="file"
-              id="formFile"
-              onChange={(e) => setimage(e.target.files[0])}
             />
           </div>
 
@@ -70,6 +59,7 @@ export default function AddCategories() {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </>
   );
 }

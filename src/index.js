@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "../src/assets/dashboard/css/style.css";
+import "../src/scss/dashboard/style.css";
 import "../node_modules/bootstrap/dist/js/bootstrap.bundle.min";
 import { BrowserRouter as Router } from "react-router-dom";
 import { WindowWidthProvider } from "./Dasboard/Context/GetWidth";

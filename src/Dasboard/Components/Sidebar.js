@@ -12,7 +12,7 @@ export default function Sidebar() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const windowWidth = useWindowWidth();
   const { isSidebarOpen, toggleSidebar } = useSidebar();
   const showSidebarList = SidebarLinks.map(
@@ -38,22 +38,22 @@ export default function Sidebar() {
   );
 
   //get user
-  async function getUser() {
-    try {
-      await Axios.get("user").then((data) => {
-        setName(data.data.name);
-        setEmail(data.data.email);
-        setRole(data.data.role);
-      });
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  }
+  // async function getUser() {
+  //   try {
+  //     await Axios.get("user").then((data) => {
+  //       setName(data.data.name);
+  //       setEmail(data.data.email);
+  //       setRole(data.data.role);
+  //     });
+  //   } catch (err) {
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
 
   //handle logout
   async function handleLogout(e) {

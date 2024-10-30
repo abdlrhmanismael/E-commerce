@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Register from "./Dasboard/Authrizations/Register";
 import Login from "./Dasboard/Authrizations/Login";
 import Home from "./Dasboard/Pages/Home";
-import "../src/assets/dashboard/css/style.css";
+import "../src/scss/dashboard/style.css";
 import Users from "./Dasboard/Pages/Users/Users";
 import RequireAuth from "./Dasboard/Authrizations/RequireAuth";
 import RequireRole from "./Dasboard/Authrizations/RquireRole";
@@ -28,6 +28,7 @@ import FindUs from "./website/Pages/Home/FindUs";
 import ImgFindUS from "../src/website/images/modelitem.png";
 import ContactUs from "./website/Pages/ContactUs";
 import Test from "./Test";
+import LibraryTable from "./Dasboard/Components/LibraryTable";
 export default function App() {
   return (
     <>
@@ -55,21 +56,22 @@ export default function App() {
           <Route path="/login" element={<Login />} />
         </Route>
         <Route path="/403" element={<Err403 />} />
-        <Route element={<RequireAuth />}>
-          <Route path="/" element={<Home />}>
-            <Route element={<RequireRole allowRole={["1995"]} />}>
-              <Route path="users" element={<Users />} />
-              <Route path="users/:id" element={<EditUser />} />
-              <Route path="adduser" element={<AddUser />} />
-              <Route path="categories" element={<Categories />} />
-              <Route path="addcategories" element={<AddCategories />} />
-              <Route path="categories/:id" element={<EditCategory />} />
-              <Route path="products" element={<Products />} />
-              <Route path="addproduct" element={<AddProduct />} />
-              <Route path="products/:id" element={<EditProduct />} />
-            </Route>
-          </Route>
+        {/* <Route element={<RequireAuth />}> */}
+        <Route path="/" element={<Home />}>
+          {/* <Route element={<RequireRole allowRole={["admin"]} />}> */}
+          <Route path="users" element={<Users />} />
+          <Route path="users/:id" element={<EditUser />} />
+          <Route path="adduser" element={<AddUser />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="addcategories" element={<AddCategories />} />
+          <Route path="categories/:id" element={<EditCategory />} />
+          <Route path="products" element={<Products />} />
+          <Route path="addproduct" element={<AddProduct />} />
+          <Route path="products/:id" element={<EditProduct />} />
+          <Route path="table" element={<LibraryTable />} />
         </Route>
+        {/* </Route> */}
+        {/* </Route> */}
         {/* dashboard */}
       </Routes>
     </>
