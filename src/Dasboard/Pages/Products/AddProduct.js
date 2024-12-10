@@ -14,7 +14,7 @@ export default function AddProduct() {
     ProductTypeID: "" || null,
     Name: "",
     Description: "",
-    SmallDescription: "scd",
+    SmallDescription: "",
     Price: "",
     Discount: "",
     SellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
@@ -43,7 +43,7 @@ export default function AddProduct() {
       await Axios.get(`RefProductType/GetAll`).then((data) => {
         setCategories(data.data);
       });
-    } catch (err) {}
+    } catch (err) { }
   }
 
   useEffect(() => {
@@ -58,11 +58,11 @@ export default function AddProduct() {
 
   useEffect(() => {
     form.title === "" ||
-    form.description === "" ||
-    form.About === "" ||
-    form.price === "" ||
-    form.discount === "" ||
-    images.length === 0
+      form.description === "" ||
+      form.About === "" ||
+      form.price === "" ||
+      form.discount === "" ||
+      images.length === 0
       ? setSubmit(false)
       : setSubmit(true);
   }, [
@@ -118,8 +118,7 @@ export default function AddProduct() {
         SellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
       });
       setImages([]);
-      setSent(false);
-      setSentButton(false);
+
     } catch (err) {
       console.error(err);
       toast.error(`Error: ${err.message}`, { position: "top-right" });
@@ -157,17 +156,7 @@ export default function AddProduct() {
             />
           </div>
 
-          <div
-            className="progress"
-            role="progressbar"
-            aria-label="Example with label"
-          >
-            <div
-              className="progress-bar"
-              ref={(el) => (progdiv.current[key] = el)} // Ensure this is set correctly for each image
-              style={{ width: "0%" }}
-            ></div>
-          </div>
+
         </div>
       </div>
     </div>
@@ -252,21 +241,22 @@ export default function AddProduct() {
             </div>
             <div className="mb-3">
               <label
-                htmlFor="SmallDescription "
+                htmlFor="description"
                 className="form-label text-black fw-bold"
               >
                 Small Description
               </label>
-              <input
-                type="text"
+              <textarea
                 className="form-control"
-                id="SmallDescription "
+                id="SmallDescription"
                 rows="3"
+                required
                 value={form.SmallDescription}
                 onChange={handleForm}
                 disabled={sent ? false : true}
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="price" className="form-label text-black fw-bold">
                 Price
@@ -317,7 +307,7 @@ export default function AddProduct() {
             <button
               type="submit"
               className="btn btn-primary"
-              // disabled={!submit || sentButton}
+            // disabled={!submit || sentButton}
             >
               {sentButton ? "Loading..." : "Submit"}
             </button>

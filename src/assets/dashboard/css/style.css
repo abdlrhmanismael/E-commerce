@@ -2,6 +2,9 @@
 ul {
   list-style: none;
 }
+body{
+  background-color: #fff !important;
+}
 
 /*!
  * Bootstrap  v5.3.3 (https://getbootstrap.com/)

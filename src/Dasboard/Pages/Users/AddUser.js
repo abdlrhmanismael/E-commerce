@@ -14,31 +14,75 @@ export default function AddUser() {
     password: "",
     phoneNumber: "",
   });
-
+  const [role, setRole] = useState("0");
   //handle edit user
   async function EditUser(e) {
     e.preventDefault();
+
     try {
-      const newForm = {
-        userRegister: {
-          ...form,
-          address: {
-            street: "zag",
-            city: "string",
-            state: "string",
-            postalCode: 12345,
-            country: "string",
+      if (role === "Admin") {
+        const newForm = {
+          userRegister: {
+            ...form,
+            address: {
+              street: "zag",
+              city: "string",
+              state: "string",
+              postalCode: 12345,
+              country: "string",
+            },
           },
-          // dateCreated: "2024-10-29T17:45:06.747Z",
-          // isActive: true,
-        },
-        // lastLogin: "2024-10-29T17:45:06.747Z",
-        adminNotes: "string",
-      };
-      await Axios.post(`Admin/AdminRegister`, newForm);
-      toast.success("Added", {
-        position: "top-right",
-      });
+
+          adminNotes: "string",
+        };
+        await Axios.post(`Admin/AdminRegister`, newForm);
+        toast.success("Added", {
+          position: "top-right",
+        });
+      } else if (role === "Seller") {
+        const newForm = {
+          userRegister: {
+            ...form,
+            address: {
+              street: "zag",
+              city: "string",
+              state: "string",
+              postalCode: 12345,
+              country: "string",
+            },
+
+          },
+          store: {
+            storeName: "BODA",
+            description: "CLOTHES",
+          }
+
+        };
+        await Axios.post(`Seller/SellerRegister`, newForm);
+        toast.success("Added", {
+          position: "top-right",
+        });
+      } else if (role === "Customer") {
+        const newForm = {
+          userRegister: {
+            ...form,
+            address: {
+              street: "zag",
+              city: "string",
+              state: "string",
+              postalCode: 12345,
+              country: "string",
+            },
+
+          },
+
+
+        };
+        await Axios.post(`Customer/CustomerRegister`, newForm);
+        toast.success("Added", {
+          position: "top-right",
+        });
+      }
       setform({
         firstName: "",
         lastName: "",
@@ -68,7 +112,7 @@ export default function AddUser() {
             width: !isSidebarOpen ? "80%" : "100%",
           }}
         >
-          Add Admin!
+          Add Users!
         </h3>
         <form onSubmit={EditUser} className="w-100" style={{}}>
           <div className="mb-3">
@@ -149,6 +193,23 @@ export default function AddUser() {
               required
             />
           </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label text-black ">
+              Password
+            </label>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="0">Open this select menu</option>
+              <option value="Admin">Admin</option>
+              <option value="Seller">Seller</option>
+              <option value="Customer">Customer</option>
+            </select>
+          </div>
+
 
           <div className="text-center ">
             <button

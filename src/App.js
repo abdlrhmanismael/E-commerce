@@ -29,6 +29,10 @@ import ImgFindUS from "../src/website/images/modelitem.png";
 import ContactUs from "./website/Pages/ContactUs";
 import Test from "./Test";
 import LibraryTable from "./Dasboard/Components/LibraryTable";
+import Sellers from "./Dasboard/Pages/Users/Sellers";
+import EditSeller from "./Dasboard/Pages/Users/EditSeller";
+import Customers from "./Dasboard/Pages/Users/Customers";
+import EditCustomer from "./Dasboard/Pages/Users/EditCustomer";
 export default function App() {
   return (
     <>
@@ -59,9 +63,13 @@ export default function App() {
         {/* <Route element={<RequireAuth />}> */}
         <Route path="/" element={<Home />}>
           {/* <Route element={<RequireRole allowRole={["admin"]} />}> */}
-          <Route path="users" element={<Users />} />
-          <Route path="users/:id" element={<EditUser />} />
+          <Route path="admins" element={<Users />} />
+          <Route path="admins/:id" element={<EditUser />} />
           <Route path="adduser" element={<AddUser />} />
+          <Route path="sellers" element={<Sellers />} />
+          <Route path="sellers/:id" element={<EditSeller />} />
+          <Route path="Customers" element={<Customers />} />
+          <Route path="customers/:id" element={<EditCustomer />} />
           <Route path="categories" element={<Categories />} />
           <Route path="addcategories" element={<AddCategories />} />
           <Route path="categories/:id" element={<EditCategory />} />

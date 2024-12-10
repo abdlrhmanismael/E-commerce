@@ -41,6 +41,9 @@ export default function Users() {
         accessorKey: "role",
         header: "Role",
         size: 150,
+        Cell: ({ row }) => (
+          <span>Admin</span>
+        ),
       },
       {
         accessorKey: "dateCreated",
@@ -82,7 +85,7 @@ export default function Users() {
 
   async function handleDelete(id) {
     try {
-      await Axios.delete(`/Admin/DeleteAdmin?ID=${id}`);
+      await Axios.delete(`Admin/DeleteAdmin?ID=${id}`);
       setRefresh((prev) => !prev); // Toggle refresh state to trigger re-fetch
       toast.success("Deletetd", {
         position: "top-right",

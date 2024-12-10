@@ -12,8 +12,9 @@ export default function EditUser() {
     lastName: "",
     userName: "",
     email: "",
-    // role: "",
+    password: "",
     phoneNumber: "",
+
   });
   console.log(form);
   const [loading, setLoading] = useState(false);
@@ -26,9 +27,10 @@ export default function EditUser() {
         userRegister: {
           ...form,
         },
+        adminNotes: "string",
       };
       await Axios.put(`Admin/UpdateAdmin?ID=${id.id}`, editFotm);
-      window.location.pathname = "/users";
+      window.location.pathname = "/admins";
     } catch (err) {
       console.log(err);
     }
@@ -107,6 +109,18 @@ export default function EditUser() {
               className="form-control"
               id="email"
               value={form.email || ""}
+              onChange={handleForm}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label text-black">
+              Password
+            </label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              value={form.password || ""}
               onChange={handleForm}
             />
           </div>

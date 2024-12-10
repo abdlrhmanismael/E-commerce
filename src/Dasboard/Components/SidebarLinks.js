@@ -15,8 +15,20 @@ export const SidebarLinks = [
     role: ["admin", "1996"],
   },
   {
-    name: "Users",
-    link: "Users",
+    name: "Admins",
+    link: "Admins",
+    icon: faUser,
+    role: ["admin", "1996"],
+  },
+  {
+    name: "Sellers",
+    link: "Sellers",
+    icon: faUser,
+    role: ["admin", "1996"],
+  },
+  {
+    name: "Customers",
+    link: "Customers",
     icon: faUser,
     role: ["admin", "1996"],
   },

@@ -65,16 +65,7 @@ export default function Products() {
         header: "sellerID",
         size: 150,
       },
-      {
-        accessorKey: "price",
-        header: "Price",
-        size: 150,
-      },
-      {
-        accessorKey: "discount",
-        header: "Discount",
-        size: 150,
-      },
+
 
       {
         accessorKey: "actions",
