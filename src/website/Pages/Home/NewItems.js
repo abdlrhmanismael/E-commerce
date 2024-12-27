@@ -6,8 +6,9 @@ export default function NewItems() {
   const [items, setItems] = useState([]);
   async function getitems() {
     try {
-      let res = await Axios.get("/products?limit=8");
-      setItems(res.data.data);
+      let res = await Axios.get("/Product/GetAll");
+      setItems(res.data);
+
     } catch (err) {
       console.log(err);
     }
@@ -19,22 +20,22 @@ export default function NewItems() {
     items.length > 0 &&
     items.map((item, key) => (
       <div className="newitemcard col-8 col-md-4 col-lg-3  p-3" key={key}>
-        <Link to={`/collection/${item.id}`}>
+        <Link to={`/collection/${item.productID}`}>
           <div className="img w-100">
             <img
-              src={item.images[0].image}
+              src={item.productImages[0].imageUrl}
               alt="img"
               className="w-100 imgone"
             ></img>
             <img
-              src={item.images[1].image}
+              src={item.productImages[1].imageUrl}
               alt="img"
               className="w-100 position-absolute left-0 imgtwo"
             ></img>
           </div>
           <div className="iteminfo">
             <p className="sitename">e-commerce</p>
-            <p className="title">{item.title}</p>
+            <p className="title">{item.name}</p>
             <p className="price">{item.price} LE</p>
           </div>
         </Link>

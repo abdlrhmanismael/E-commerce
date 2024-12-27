@@ -1,6 +1,9 @@
-.swiper {
-  height: calc(100vh - 50px);
-}
+// .swiper {
+//   height: calc(100vh - 50px);
+// }
 .offcanvas {
   z-index: 999999999999999;
+}
+.custom-height {
+  height: 300px; /* Adjust this value as needed */
 }

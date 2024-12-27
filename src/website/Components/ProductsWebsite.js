@@ -8,9 +8,9 @@ export default function ProductsWebsite() {
   const [total, setTotal] = useState([]);
   async function getitems() {
     try {
-      let res = await Axios.get(`/products?limit=${4}&page=${page}`);
-      setItems(res.data.data);
-      setTotal(res.data.total);
+      let res = await Axios.get(`/Product/GetAll`);
+      setItems(res.data);
+      setTotal(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -21,22 +21,22 @@ export default function ProductsWebsite() {
   console.log(page);
   const showItems = items.map((item, key) => (
     <div className="newitemcard col-12 col-md-6 col-lg-3  p-3" key={key}>
-      <a href={`collection/${item.id}`}>
+      <a href={`collection/${item.productID}`}>
         <div className="img w-100">
           <img
-            src={item.images[0].image}
+            src={item.productImages[0].imageUrl}
             alt="img"
             className="w-100 imgone"
           ></img>
           <img
-            src={item.images[1].image}
+            src={item.productImages[1].imageUrl}
             alt="img"
             className="w-100 position-absolute left-0 imgtwo"
           ></img>
         </div>
         <div className="iteminfo">
           <p className="sitename">e-commerce</p>
-          <p className="title">{item.title}</p>
+          <p className="title">{item.name}</p>
           <p className="price">{item.price}LE</p>
         </div>
       </a>
@@ -46,7 +46,7 @@ export default function ProductsWebsite() {
     <>
       <div className=" flex-grow-1 ">
         <div className="d-flex flex-wrap">{showItems}</div>
-        <WebsitePagination total={total} itemPerPage={4} setpage={setpage} />
+        {/* <WebsitePagination total={total} itemPerPage={4} setpage={setpage} /> */}
       </div>
     </>
   );

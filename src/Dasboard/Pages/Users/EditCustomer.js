@@ -29,7 +29,7 @@ export default function EditCustomer() {
                 },
             };
             await Axios.put(`Customer/UpdateCustomer?ID=${id.id}`, editFotm);
-            window.location.pathname = "/customers";
+            // window.location.pathname = "/customers";
         } catch (err) {
             console.log(err);
         }

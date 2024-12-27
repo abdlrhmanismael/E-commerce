@@ -3,13 +3,14 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
 import { useWindowWidth } from "../../../Dasboard/Context/GetWidth";
+import { Axios } from "../../../Dasboard/Axios/axios";
 
 export default function Footer() {
   const widtwindow = useWindowWidth();
   const [categories, setCategoriet] = useState([]);
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/categories")
+    Axios
+      .get("/RefProductType/GetAll")
       .then((data) => setCategoriet(data.data));
   }, []);
   const showCategories = categories.map((category, key) => (

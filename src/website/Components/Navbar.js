@@ -7,10 +7,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWindowWidth } from "../../Dasboard/Context/GetWidth";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { Link } from "react-router-dom";
 import { Axios } from "../../Dasboard/Axios/axios";
+import { CartContext } from "../../Dasboard/Context/Cart";
+import Cookie from "cookie-universal";
 
 export default function Navbar(props) {
   const windowwidth = useWindowWidth();
@@ -19,26 +21,34 @@ export default function Navbar(props) {
   const categoriesRef = useRef(null);
   const dropRef = useRef(null);
   const [categories, setCategories] = useState([]);
+  const [trys, setrys] = useState([]);
   const [products, setProducts] = useState([]);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCardOpen, setisCardOpen] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
+  const { cartitems, setCart } = useContext(CartContext);
+  const cookie = Cookie();
+  const id = cookie.get("CustomerId");
+  const token = cookie.get("CustomerAccount");
+
   //get categorios
   useEffect(() => {
-    Axios.get("/categories").then((data) => setCategories(data.data));
+    Axios.get("/RefProductType/GetAll").then((data) => setCategories(data.data));
+    Axios.get(`/cart/GetCartByCustomerID?customerID=${id}`).then((data) => setCart(data.data.cartItems));
   }, []);
   const showCategories = categories.map((category, key) => (
     <li className="text-black" key={key}>
-      {category.title}
+      {category.productTypeName}
     </li>
   ));
   const showSmallCategories = categories.map((category, key) => (
     <li className="text-black" key={key}>
-      {category.title.toUpperCase()}
+      {category.productTypeName.toUpperCase()}
     </li>
   ));
+
   // to hide search div in small and mdeuim screens
   useEffect(() => {
     function handleResize() {
@@ -54,15 +64,58 @@ export default function Navbar(props) {
         }
       }
     }
+    const cookie = Cookie();
+    const token = cookie.get("CustomerAccount");
 
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [isSearchOpen, search]);
+  const cartCounter = async (increase, product) => {
+    if (increase === true) {
+      try {
+        const cartItem = {
+          customerID: id,
+          productID: product.productID,
+          quantity: 1, // Default quantity
+        };
+        await Axios.post('/Cart/AddorupdateCart', cartItem)
+        let cart = await Axios.get(`/cart/GetCartByCustomerID?customerID=${id}`)
+        setCart(cart.data.cartItems)
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    else if (increase === false && product.quantity > 1) {
+      try {
+        const cartItem = {
+          customerID: id,
+          productID: product.productID,
+          quantity: -1, // Default quantity
+        };
+        await Axios.post('/Cart/AddorupdateCart', cartItem)
+        let cart = await Axios.get(`/cart/GetCartByCustomerID?customerID=${id}`)
+        setCart(cart.data.cartItems)
+      } catch (err) {
+        console.log(err);
+      }
+    } else if (increase === false && product.quantity === 1) {
+      try {
+        const cartItem = {
+          customerID: id,
+          productID: product.productID,
+          quantity: -1, // Default quantity
+        };
+        await Axios.post('/Cart/AddorupdateCart', cartItem)
+        let cart = await Axios.get(`/cart/GetCartByCustomerID?customerID=${id}`)
+        setCart(cart.data.cartItems)
 
-  //to show the search div
-  console.log(products);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
   function dropmenuaddclas() {
     if (
       !categoriesRef["current"].classList.contains("is-active") ||
@@ -82,16 +135,19 @@ export default function Navbar(props) {
   }
   //GET SEARCH CONTENT
   async function getSearch() {
-    let res = await Axios.get("/products");
+    let res = await Axios.get("/Product/GetAll");
     setProducts(res.data);
   }
+
+
   useEffect(() => {
     getSearch();
   }, []);
+
   const filterSearch = searchFilter
     ? products.filter((item) =>
-        item.title.toLowerCase().includes(searchFilter.toLowerCase())
-      )
+      item.title.toLowerCase().includes(searchFilter.toLowerCase())
+    )
     : [];
 
   const showSearchFilter = filterSearch.map((product, key) => (
@@ -101,7 +157,7 @@ export default function Navbar(props) {
     >
       <div>
         <img
-          src={product.images[0].image}
+          src={product.productImages[0].imageUrl}
           alt="img"
           width={40}
           height={80}
@@ -110,7 +166,7 @@ export default function Navbar(props) {
       </div>
       <div className="ms-3">
         <p className="text-secondary mb-0">e-commerce</p>
-        <p className="text-black mb-0">{product.title}</p>
+        <p className="text-black mb-0">{product.name}</p>
         <p className="text-black">{product.price} LE</p>
       </div>
     </div>
@@ -189,15 +245,24 @@ export default function Navbar(props) {
                   </div>
 
                   <div className="d-flex align-items-center">
-                    <Link
-                      to="account/login"
-                      className={`${props.site === "true" && "text-black"}`}
-                    >
-                      <FontAwesomeIcon
-                        icon={faUser}
-                        className=" me-3 navicon"
-                      />
-                    </Link>
+                    {token && (
+                      <Link
+                        to="/account"
+                        className={`${props.site === "true" && "text-black"}`}
+                      >
+
+                        <FontAwesomeIcon icon={faUser} className="me-3" />
+                      </Link>
+                    )}
+                    {!token && (
+                      <Link
+                        to="/account/login"
+                        className={`${props.site === "true" && "text-black"}`}
+                        style={{ textDecoration: "none" }}
+                      >
+                        <FontAwesomeIcon icon={faUser} className="me-3" />
+                      </Link>
+                    )}
                     <FontAwesomeIcon
                       icon={faCartShopping}
                       onClick={() => setisCardOpen(true)}
@@ -264,34 +329,12 @@ export default function Navbar(props) {
                 </Link>
               </li>
               <div
-                onMouseOver={dropmenuaddclas}
-                onMouseLeave={dropmenuremoveclass}
+
               >
-                <li className="me-5 fs-5">
-                  <button
-                    type="button"
-                    className="btn fs-5 p-0 border-0 catinfo "
-                    style={{ color: props.site === "true" && "black" }}
-                  >
-                    CATEGORIES
-                  </button>
-                  <div className="drop-menu" ref={dropRef}>
-                    <ul className=" rounded-0  catlist" ref={categoriesRef}>
-                      {showCategories}
-                    </ul>
-                  </div>
-                </li>
+
               </div>
 
-              <li className="me-5 fs-5">
-                <Link
-                  to="/sales"
-                  className="catinfo"
-                  style={{ color: props.site === "true" && "black" }}
-                >
-                  SALES
-                </Link>
-              </li>
+
               <li className="me-5 fs-5">
                 <Link
                   to="/contactus"
@@ -308,15 +351,6 @@ export default function Navbar(props) {
                   style={{ color: props.site === "true" && "black" }}
                 >
                   FIND STORE
-                </Link>
-              </li>
-              <li className="me-5 fs-5">
-                <Link
-                  to="/news"
-                  className="catinfo"
-                  style={{ color: props.site === "true" && "black" }}
-                >
-                  News
                 </Link>
               </li>
             </ul>
@@ -342,14 +376,24 @@ export default function Navbar(props) {
                 <li className="my-3 fs-4 border-bottom pb-3">SALES</li>
                 <li className="my-3 fs-4 border-bottom pb-3">CONTACT US</li>
               </ul>
-              <Link
-                to="/account/login"
-                className="d-flex align-items-center border-top pt-3"
-                style={{ textDecoration: "none" }}
-              >
-                <FontAwesomeIcon icon={faUser} className="me-3" />
-                Login
-              </Link>
+              {token && (
+                <Link
+                  to="/account"
+                  className={`${props.site === "true" && "text-black"}`}
+                >
+
+                  <FontAwesomeIcon icon={faUser} className="me-3" />
+                </Link>
+              )}
+              {!token && (
+                <Link
+                  to="/account/login"
+                  className={`${props.site === "true" && "text-black"}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <FontAwesomeIcon icon={faUser} className="me-3" />
+                </Link>
+              )}
             </Offcanvas.Body>
           </Offcanvas>
           <Offcanvas
@@ -418,13 +462,37 @@ export default function Navbar(props) {
               setisCardOpen(false);
             }}
           >
-            <Offcanvas.Header closeButton></Offcanvas.Header>
-            <Offcanvas.Body className="category-offcanvas">
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title>Your Cart</Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body className="d-flex flex-column justify-content-between h-100">
               <div>
-                <h1>card</h1>
+                <div className="items">
+                  {cartitems && cartitems.map((item, key) => (
+                    <div className="" key={key}>
+                      <h1 className="text-black">{item.productName}</h1>
+                      <div className="d-flex justify-content-between">
+                        <div className="counter d-flex align-items-center">
+                          <span className="px-2 py-1 border border-1" onClick={() => cartCounter(true, item)}>+</span>
+                          <p className="mb-0 px-2">{item.quantity}</p>
+                          <span className="px-2 py-1 border border-1" onClick={() => cartCounter(false, item)}>-</span>
+                        </div>
+                        <p className="text-secondary">{item.price}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="border-top pt-3">
+                <h5 className="d-flex justify-content-between">
+                </h5>
+                <Link to={'/checkout'} className="btn btn-primary w-100 mt-3"  >
+                  Proceed to Checkout
+                </Link>
               </div>
             </Offcanvas.Body>
           </Offcanvas>
+
         </div>
       </div>
     </>

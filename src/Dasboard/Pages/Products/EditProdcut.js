@@ -17,6 +17,7 @@ export default function Try() {
     smallDescription: "",
     price: "",
     discount: "",
+    stockQuantity: null,
     productImages: [],
     sellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
   });
@@ -75,7 +76,7 @@ export default function Try() {
       .map((id) => `RemoveImagesIDs=${id}`)
       .join("&");
 
-    const url = `https://thisisanecommerce.runasp.net/api/Product/Update?ID=${id}&${removeImagesParams}&&ProductTypeID=${form.productTypeID}&Name=${form.name}&Description=${form.description}&SmallDescription=${form.smallDescription}&Price=${form.price}&Discount=${form.discount}&SellerID=${form.sellerID}`;
+    const url = `https://thisisanecommerce.runasp.net/api/Product/Update?ID=${id}&${removeImagesParams}&&ProductTypeID=${form.productTypeID}&Name=${form.name}&Description=${form.description}&SmallDescription=${form.smallDescription}&Price=${form.price}&Discount=${form.discount}&stockQuantity=${form.stockQuantity}&SellerID=${form.sellerID}`;
 
     try {
       await Axios.put(url, formData, {
@@ -90,6 +91,7 @@ export default function Try() {
         SmallDescription: "",
         Price: "",
         Discount: "",
+        stockQuantity: "",
         SellerID: "731b1f15-1b34-4e13-a808-48f686deca21",
       });
       window.location.pathname = "/products";
@@ -273,6 +275,19 @@ export default function Try() {
               id="discount"
               required
               value={form.discount}
+              onChange={handleForm}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="stockQuantity" className="form-label">
+              stockQuantity
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              id="stockQuantity"
+              required
+              value={form.stockQuantity}
               onChange={handleForm}
             />
           </div>

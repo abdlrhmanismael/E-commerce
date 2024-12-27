@@ -6,6 +6,7 @@ import "../node_modules/bootstrap/dist/js/bootstrap.bundle.min";
 import { BrowserRouter as Router } from "react-router-dom";
 import { WindowWidthProvider } from "./Dasboard/Context/GetWidth";
 import { SidebarProvider } from "./Dasboard/Context/SidebarIsOpen";
+import { CartProvider } from "./Dasboard/Context/Cart";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -13,7 +14,9 @@ root.render(
     <Router>
       <WindowWidthProvider>
         <SidebarProvider>
-          <App />
+          <CartProvider>
+            <App />
+          </CartProvider>
         </SidebarProvider>
       </WindowWidthProvider>
     </Router>

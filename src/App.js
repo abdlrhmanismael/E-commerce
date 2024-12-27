@@ -33,6 +33,12 @@ import Sellers from "./Dasboard/Pages/Users/Sellers";
 import EditSeller from "./Dasboard/Pages/Users/EditSeller";
 import Customers from "./Dasboard/Pages/Users/Customers";
 import EditCustomer from "./Dasboard/Pages/Users/EditCustomer";
+import LoginAuth from "./website/Auth/LoginAuth";
+import ReAuth from "./website/Auth/ReAuth";
+import Account from "./website/Pages/Home/Account";
+import Checkout from "./website/Pages/Checkout";
+import OrderSuccess from "./website/Pages/OrderSuccess";
+import OrderDetails from "./website/Pages/OrderDetails";
 export default function App() {
   return (
     <>
@@ -44,9 +50,17 @@ export default function App() {
         </Route>
         <Route element={<Website />}>
           <Route path="siteproducts" element={<SiteProducts />} />
-          <Route path="account/login" element={<AccountLogin />} />
-          <Route path="account/signup" element={<AccountSignup />} />
+          <Route element={<LoginAuth />}>
+            <Route path="account/login" element={<AccountLogin />} />
+          </Route>
+          <Route element={<ReAuth />}>
+            <Route path="account/signup" element={<AccountSignup />} />
+          </Route>
           <Route path="contactus" element={<ContactUs />} />
+          <Route path="account" element={<Account />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="order-success" element={<OrderSuccess />} />
+          <Route path="order/:id" element={<OrderDetails />} />
           <Route
             path="findus"
             element={<FindUs IsImgs={true} content={ImgFindUS} />}

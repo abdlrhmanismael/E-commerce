@@ -7,7 +7,7 @@ export default function SiteProducts() {
     <>
       <FilterOffcanvas />
       <div className="container d-flex">
-        <Filterbar />
+        {/* <Filterbar /> */}
         <ProductsWebsite />
       </div>
     </>

@@ -1,15 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import WebsiteHeader from "../Components/Header";
 import Navbar from "../Components/Navbar";
 import Footer from "./Home/Footer";
-
-// Import images
-
+import { CartContext } from "../../Dasboard/Context/Cart";
 import { Axios } from "../../Dasboard/Axios/axios";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Loading from "../../Dasboard/Components/Loading";
+import Cookie from "cookie-universal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Reviews from "../Components/Reviews";
+
 export default function Item() {
   const Id = useParams();
   const [item, setItem] = useState("");
@@ -26,6 +29,33 @@ export default function Item() {
       left: collection.scrollLeft + scrollAmount,
       behavior: "smooth",
     });
+  };
+  const cookie = Cookie();
+  const token = cookie.get("CustomerAccount");
+  const id = cookie.get("CustomerId");
+  const { cartitems, setCart } = useContext(CartContext);
+
+  const handleAddToCart = async () => {
+    const selectedSize = document.getElementById("size").value;
+    const cartItem = {
+      customerID: id,
+      productID: item.productID,
+      quantity: 1, // Default quantity
+    };
+    if (token) {
+      try {
+        await Axios.post('/Cart/AddorupdateCart', cartItem)
+        let cart = await Axios.get(`/cart/GetCartByCustomerID?customerID=${id}`)
+        setCart(cart.data.cartItems)
+        toast.success("added", {
+          position: "top-right",
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      window.location.href = '/account/login'
+    }
   };
 
   const checkScrollPosition = () => {
@@ -48,7 +78,7 @@ export default function Item() {
   }, []);
   async function getitem() {
     try {
-      let res = await Axios.get(`/product/${Id.item}`);
+      let res = await Axios.get(`/Product/GetByID?ID=${Id.item}`);
       if (res.data.length === 0) {
         setERR(true);
       } else {
@@ -60,30 +90,29 @@ export default function Item() {
       setLoading(false);
     }
   }
-  console.log(erroritem);
   useEffect(() => {
     getitem();
   }, []);
+
   const showimgs =
     item === ""
       ? ""
-      : item[0].images.map((img, key) => (
-          <div className="p-1 item-img" key={key}>
-            <img
-              src={img.image}
-              alt="img"
-              className="border-black"
-              width="70px"
-              height="100%"
-              onClick={(e) => {
-                document.querySelector(".active")?.classList.remove("active");
-                e.target.classList.add("active");
-                setActiveIndex(key);
-              }}
-            />
-          </div>
-        ));
-  console.log(item);
+      : item.productImages.map((img, key) => (
+        <div className="p-1 item-img" key={key}>
+          <img
+            src={img.imageUrl}
+            alt="img"
+            className="border-black"
+            width="70px"
+            height="100%"
+            onClick={(e) => {
+              document.querySelector(".active")?.classList.remove("active");
+              e.target.classList.add("active");
+              setActiveIndex(key);
+            }}
+          />
+        </div>
+      ));
   return loading ? (
     <Loading />
   ) : erroritem ? (
@@ -97,7 +126,7 @@ export default function Item() {
           <div className="col-12 col-md-6">
             <div>
               <img
-                src={item === "" ? "" : item[0].images[activeIndex].image}
+                src={item === "" ? "" : item.productImages[activeIndex].imageUrl}
                 alt=""
                 width="100%"
               />
@@ -126,9 +155,9 @@ export default function Item() {
           </div>
           <div className="col-12 col-md-6">
             <div className="item-des p-4">
-              <h3>{item[0].title}</h3>
+              <h3>{item.name}</h3>
               <p className="price mb-0">
-                {item[0].price} <span className="tracking-wider">LE</span>
+                {item.price} <span className="tracking-wider">LE</span>
               </p>
               <p className="tax">
                 Tax included. Shipping calculated at checkout.
@@ -145,13 +174,14 @@ export default function Item() {
                   <option>33</option>
                 </select>
               </div>
-              <p className="des mt-4">{item[0].description}</p>
+              <p className="des mt-4">{item.description}</p>
               <h6>
                 Step into unrestricted comfort and conquer the season. Shop now
                 and rewrite the summer rulebook.
               </h6>
               <h6 className="mt-3">COTTON 100%</h6>
-              <button className="prim-btn border-0 w-100 letter-wide">
+              <button className="prim-btn border-0 w-100 letter-wide" onClick={handleAddToCart}
+              >
                 ADD TO CART
               </button>
               <button className="prim-btn border-0 w-100 bg-black letter-wide mt-2">
@@ -161,7 +191,9 @@ export default function Item() {
           </div>
         </div>
       </div>
+      <Reviews />
       <Footer />
+      <ToastContainer />
     </>
   );
 }
