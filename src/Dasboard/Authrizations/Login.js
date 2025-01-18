@@ -26,13 +26,10 @@ export default function Login() {
         form
       );
       const role = res.data.roles[0];
-      if (role === "admin") {
-        cookie.set("Bearer", res.data.token);
-        window.location.pathname = "/";
-      } else {
-        setEmailErr(401);
-        console.log("err");
-      }
+
+      cookie.set("Bearer", res.data.token);
+      window.location.pathname = "/";
+
     } catch (err) {
       setEmailErr(err.response.status);
       console.log(emaillerr);

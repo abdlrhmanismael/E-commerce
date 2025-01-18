@@ -3,15 +3,18 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Header from "../Components/Header";
 import { useState } from "react";
-import axios from "axios";
 import Loading from "../Components/Loading";
+import { Axios } from "../Axios/axios";
 export default function Register() {
   const [form, setform] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
+    username: "",
     email: "",
     password: "",
-    password_confirmation: "",
+    phoneNumber: "0100",
   });
+
   const [icon, setIcon] = useState(false);
 
   const goodRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
@@ -21,19 +24,33 @@ export default function Register() {
   const [emaillerr, setEmailErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  //handel Form
+  //handle form
   function handleForm(e) {
     setform((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   }
-  //submit register request
   async function submit(e) {
     e.preventDefault();
+
     try {
-      setLoading(true);
-      await axios.post("http://127.0.0.1:8000/api/register", form);
-      window.location.pathname = "/login";
+
+      const newForm = {
+        userRegister: {
+          ...form,
+          address: {
+            street: "zag",
+            city: "string",
+            state: "string",
+            postalCode: 12345,
+            country: "string",
+          },
+        },
+        adminNotes: "string",
+      };
+      await Axios.post(`Admin/AdminRegister`, newForm);
+      window.location.href = "/login"
     } catch (err) {
-      setEmailErr(err.response.status);
+      console.log(err);
+      setEmailErr(err.response.data)
     }
   }
   //password icon change
@@ -47,26 +64,59 @@ export default function Register() {
       <Header />
       <div className="center-page">
         <div className="form d-flex rounded-5 m-3">
-          <div className="formDesign rounded-start-5 w-50 "></div>
+          <div className="formDesign rounded-start-5 w-50 ">
+          </div>
+
           <div className="formInfo mt-3 w-50 p-5 rounded-5">
+
             <h2 className="text-white mb-3">Create Your Account</h2>
-            {emaillerr === 422 && (
-              <p className="text-danger">email is Already been taken</p>
+            {emaillerr && (
+              <p className="text-danger">{emaillerr}</p>
             )}
             <form onSubmit={submit}>
               <div className="mb-3 position-relative">
                 <input
                   type="text"
                   className="form-control "
-                  id="name"
-                  placeholder="FullName"
+                  id="firstName"
+                  placeholder="firstName"
                   required
-                  value={form.name}
+                  value={form.firstName}
                   onChange={handleForm}
                 />
 
-                <label htmlFor="fullName" className=" position-absolute">
-                  FullName
+                <label htmlFor="firstName" className=" position-absolute">
+                  firs tName
+                </label>
+              </div>
+              <div className="mb-3 position-relative">
+                <input
+                  type="text"
+                  className="form-control "
+                  id="lastName"
+                  placeholder="lastName"
+                  required
+                  value={form.lastName}
+                  onChange={handleForm}
+                />
+
+                <label htmlFor="lastName" className=" position-absolute">
+                  last Name
+                </label>
+              </div>
+              <div className="mb-3 position-relative">
+                <input
+                  type="text"
+                  className="form-control "
+                  id="username"
+                  placeholder="username"
+                  required
+                  value={form.username}
+                  onChange={handleForm}
+                />
+
+                <label htmlFor="username" className=" position-absolute">
+                  last username
                 </label>
               </div>
               <div className="mb-3 position-relative">
@@ -120,10 +170,10 @@ export default function Register() {
                           ? "0%"
                           : goodRe.test(form.password) === false ||
                             strongRe.test(form.password === false)
-                          ? "100%"
-                          : goodRe.test(form.password)
-                          ? "100%"
-                          : strongRe.test(form.password) && "100%",
+                            ? "100%"
+                            : goodRe.test(form.password)
+                              ? "100%"
+                              : strongRe.test(form.password) && "100%",
                     }}
                   />
                 </div>
@@ -148,34 +198,10 @@ export default function Register() {
                 {goodRe.test(form.password) && !strongRe.test(form.password)
                   ? "password is good"
                   : strongRe.test(form.password)
-                  ? "password is strong"
-                  : "password is weak"}
+                    ? "password is strong"
+                    : "password is weak"}
               </p>
 
-              <div className="mb-3 mt-2 position-relative">
-                <input
-                  type={!icon ? "password" : "text"}
-                  className="form-control "
-                  id="password_confirmation"
-                  placeholder="Password Confirmation"
-                  required
-                  value={form.password_confirmation}
-                  onChange={handleForm}
-                />
-                <label
-                  htmlFor="passwordconfirmation"
-                  className=" position-absolute"
-                >
-                  Password Confirmation
-                </label>
-                <span className="iconLock" onClick={changeIcon}>
-                  {icon ? (
-                    <FontAwesomeIcon icon={faEyeSlash} />
-                  ) : (
-                    <FontAwesomeIcon icon={faEye} />
-                  )}
-                </span>
-              </div>
               <p className="text-white mb-0">
                 Password Must be more than 8 charchters and have at least one
                 capital and one number
@@ -184,10 +210,11 @@ export default function Register() {
               <button
                 disabled={
                   emailRe.test(form.email) &&
-                  (goodRe.test(form.password) ||
-                    strongRe.test(form.password)) &&
-                  form.password === form.password_confirmation &&
-                  form.name !== ""
+                    (goodRe.test(form.password) ||
+                      strongRe.test(form.password)) &&
+                    form.password &&
+                    form.firstName !== "" &&
+                    form.lastName !== ""
                     ? false
                     : true
                 }

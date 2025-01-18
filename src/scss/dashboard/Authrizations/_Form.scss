@@ -1,7 +1,7 @@
 .center-page {
-  height: calc(100vh - 72px);
   width: 100vw;
   display: flex;
+  min-height: 100vh;
   justify-content: center;
   align-items: center;
   background-color: #141415;

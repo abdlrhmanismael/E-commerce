@@ -11970,9 +11970,9 @@ textarea.form-control-lg {
   }
 }
 .center-page {
-  height: calc(100vh - 72px);
   width: 100vw;
   display: flex;
+  min-height: 100vh;
   justify-content: center;
   align-items: center;
   background-color: #141415;
@@ -12160,7 +12160,6 @@ textarea.form-control-lg {
 
 .dashboard {
   background: #dfdfdf;
-  min-height: 100vh;
 }
 
 .form-label {

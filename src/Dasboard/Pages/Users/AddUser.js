@@ -16,7 +16,7 @@ export default function AddUser() {
   });
   const [role, setRole] = useState("0");
   //handle edit user
-  async function EditUser(e) {
+  async function AddUser(e) {
     e.preventDefault();
 
     try {
@@ -32,7 +32,6 @@ export default function AddUser() {
               country: "string",
             },
           },
-
           adminNotes: "string",
         };
         await Axios.post(`Admin/AdminRegister`, newForm);
@@ -114,7 +113,7 @@ export default function AddUser() {
         >
           Add Users!
         </h3>
-        <form onSubmit={EditUser} className="w-100" style={{}}>
+        <form onSubmit={AddUser} className="w-100" style={{}}>
           <div className="mb-3">
             <label htmlFor="name" className="form-label text-black ">
               first Name
