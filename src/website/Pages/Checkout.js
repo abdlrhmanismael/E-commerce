@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../Dasboard/Context/Cart";
 import { Axios } from "../../Dasboard/Axios/axios";
 import Cookie from "cookie-universal";
@@ -7,42 +7,36 @@ export default function Checkout() {
     const cookie = Cookie();
     const id = cookie.get("CustomerId");
     const { cartitems, setCart } = useContext(CartContext);
-    const total = cartitems.reduce((sum, item) => sum + 10 * item.quantity, 0);
+    const total = cartitems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const [shippingAddress, setShippingAddress] = useState('')
+    const [err, seterr] = useState(false)
+
     const placeOrder = async () => {
         try {
-            await Axios.post('/Order/Add', {
+            let res = await Axios.post('/Order/Add', {
                 customerID: id,
                 shippingAddress: shippingAddress,
                 orderItems: cartitems
             })
-            window.location.href = '/order-success'
-            cartitems = []
+            window.location.href = `/order-success/${res.data.orderID}`
+            setCart([])
         } catch (err) {
             console.log(err);
+            seterr(true)
 
         }
     }
-    console.log(shippingAddress);
-
     return (
         <div className="container mt-5">
+            {err && <div className="alert alert-danger" role="alert">Please Set all inputs</div>}
             <div className="row">
                 {/* Delivery Section */}
                 <div className="col-md-7">
-                    <div className="mb-4">
-                        <h5>Account</h5>
-                        <p>test@gmail.com</p>
-                    </div>
-
                     <div>
                         <h5>Delivery</h5>
                         <form>
                             <div className="row">
                                 <div className="col-md-6 mb-3">
-                                    <label htmlFor="firstName" className="form-label">
-                                        First name
-                                    </label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -51,9 +45,6 @@ export default function Checkout() {
                                     />
                                 </div>
                                 <div className="col-md-6 mb-3">
-                                    <label htmlFor="lastName" className="form-label">
-                                        Last name
-                                    </label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -63,9 +54,6 @@ export default function Checkout() {
                                 </div>
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="address" className="form-label">
-                                    Address
-                                </label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -75,9 +63,6 @@ export default function Checkout() {
                                 />
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="apartment" className="form-label">
-                                    Apartment, suite, etc.
-                                </label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -86,9 +71,6 @@ export default function Checkout() {
                                 />
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="phone" className="form-label">
-                                    Phone
-                                </label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -97,15 +79,6 @@ export default function Checkout() {
                                 />
                             </div>
                         </form>
-                    </div>
-                    <div className="my-3">
-                        <h5>Payment</h5>
-                        <div class="form-check d-flex align-items-center">
-                            <input class="form-check-input" type="radio" name="flexRadioDisabled" id="flexRadioDisabled" />
-                            <label class="form-check-label fs-3 ms-2" for="flexRadioDisabled">
-                                Cash On delivery
-                            </label>
-                        </div>
                     </div>
                 </div>
 
@@ -119,7 +92,7 @@ export default function Checkout() {
                                         <h5>{item.productName}</h5>
                                         <div className="d-flex justify-content-between align-items-center mb-3">
                                             <span>{item.quantity}</span>
-                                            <strong>£{item.quantity * 10}</strong>
+                                            <strong>£{item.quantity * item.price}</strong>
                                         </div>
                                     </div>
                                 ))}

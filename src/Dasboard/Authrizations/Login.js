@@ -25,8 +25,6 @@ export default function Login() {
         "https://thisisanecommerce.runasp.net/api/Login/Login",
         form
       );
-      console.log(res);
-
       const role = res.data.roles[0];
       if (role === "admin") {
         cookie.set("Bearer", res.data.token);

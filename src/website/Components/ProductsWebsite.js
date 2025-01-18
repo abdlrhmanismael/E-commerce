@@ -3,22 +3,18 @@ import WebsitePagination from "./WebsitePagination";
 import { Axios } from "../../Dasboard/Axios/axios";
 
 export default function ProductsWebsite() {
-  const [page, setpage] = useState(1);
   const [items, setItems] = useState([]);
-  const [total, setTotal] = useState([]);
   async function getitems() {
     try {
       let res = await Axios.get(`/Product/GetAll`);
       setItems(res.data);
-      setTotal(res.data);
     } catch (err) {
       console.log(err);
     }
   }
   useEffect(() => {
     getitems();
-  }, [page]);
-  console.log(page);
+  }, []);
   const showItems = items.map((item, key) => (
     <div className="newitemcard col-12 col-md-6 col-lg-3  p-3" key={key}>
       <a href={`collection/${item.productID}`}>
@@ -46,7 +42,6 @@ export default function ProductsWebsite() {
     <>
       <div className=" flex-grow-1 ">
         <div className="d-flex flex-wrap">{showItems}</div>
-        {/* <WebsitePagination total={total} itemPerPage={4} setpage={setpage} /> */}
       </div>
     </>
   );

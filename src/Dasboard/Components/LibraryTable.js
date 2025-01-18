@@ -43,30 +43,8 @@ export default function LibraryTable(props) {
 
   return (
     <div>
-      <div className="mb-3">
-        <input
-          className="form-control"
-          type="date"
-          id="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <input
-          className="form-control"
-          id="exampleDataList"
-          placeholder="Type to search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
       <MaterialReactTable table={table} />
-      <Pagination
-        itemsPerPage={props.limit}
-        setpage={props.setpage}
-        total={total}
-      />
+
     </div>
   );
 }

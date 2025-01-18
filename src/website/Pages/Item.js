@@ -184,9 +184,6 @@ export default function Item() {
               >
                 ADD TO CART
               </button>
-              <button className="prim-btn border-0 w-100 bg-black letter-wide mt-2">
-                BUY IT NOW
-              </button>
             </div>
           </div>
         </div>

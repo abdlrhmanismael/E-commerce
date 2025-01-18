@@ -12160,6 +12160,7 @@ textarea.form-control-lg {
 
 .dashboard {
   background: #dfdfdf;
+  min-height: 100vh;
 }
 
 .form-label {
@@ -12653,7 +12654,7 @@ h1 {
 }
 
 .offcanvas {
-  z-index: 999999999999999;
+  z-index: 10000000000000000;
 }
 
 .custom-height {
@@ -12886,4 +12887,8 @@ input[type=checkbox] {
 }
 .contact .con-info a:hover {
   border-bottom: 1px solid #cecece;
+}
+
+.Toastify__toast {
+  z-index: 1000000000000000000 !important;
 }/*# sourceMappingURL=style.css.map */

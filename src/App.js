@@ -4,8 +4,6 @@ import Login from "./Dasboard/Authrizations/Login";
 import Home from "./Dasboard/Pages/Home";
 import "../src/scss/dashboard/style.css";
 import Users from "./Dasboard/Pages/Users/Users";
-import RequireAuth from "./Dasboard/Authrizations/RequireAuth";
-import RequireRole from "./Dasboard/Authrizations/RquireRole";
 import Err403 from "./Dasboard/Components/Err403";
 import Err404 from "./Dasboard/Components/Err404";
 import AuthLoRe from "./Dasboard/Authrizations/AuthLoRe";
@@ -27,7 +25,6 @@ import AccountSignup from "./website/Pages/AccountSignup";
 import FindUs from "./website/Pages/Home/FindUs";
 import ImgFindUS from "../src/website/images/modelitem.png";
 import ContactUs from "./website/Pages/ContactUs";
-import Test from "./Test";
 import LibraryTable from "./Dasboard/Components/LibraryTable";
 import Sellers from "./Dasboard/Pages/Users/Sellers";
 import EditSeller from "./Dasboard/Pages/Users/EditSeller";
@@ -39,6 +36,8 @@ import Account from "./website/Pages/Home/Account";
 import Checkout from "./website/Pages/Checkout";
 import OrderSuccess from "./website/Pages/OrderSuccess";
 import OrderDetails from "./website/Pages/OrderDetails";
+import Orders from "./Dasboard/Pages/Orders/Orders";
+import StoreOrderDetails from "./Dasboard/Pages/Orders/StoreOrderDetails";
 export default function App() {
   return (
     <>
@@ -59,7 +58,7 @@ export default function App() {
           <Route path="contactus" element={<ContactUs />} />
           <Route path="account" element={<Account />} />
           <Route path="checkout" element={<Checkout />} />
-          <Route path="order-success" element={<OrderSuccess />} />
+          <Route path="order-success/:id" element={<OrderSuccess />} />
           <Route path="order/:id" element={<OrderDetails />} />
           <Route
             path="findus"
@@ -67,16 +66,13 @@ export default function App() {
           />
         </Route>
         <Route path="/collection/:item" element={<Item />} />
-        <Route path="/test" element={<Test />} />
         {/* dashboard */}
         <Route element={<AuthLoRe />}>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
         </Route>
         <Route path="/403" element={<Err403 />} />
-        {/* <Route element={<RequireAuth />}> */}
         <Route path="/" element={<Home />}>
-          {/* <Route element={<RequireRole allowRole={["admin"]} />}> */}
           <Route path="admins" element={<Users />} />
           <Route path="admins/:id" element={<EditUser />} />
           <Route path="adduser" element={<AddUser />} />
@@ -91,10 +87,11 @@ export default function App() {
           <Route path="addproduct" element={<AddProduct />} />
           <Route path="products/:id" element={<EditProduct />} />
           <Route path="table" element={<LibraryTable />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="store/order/:id" element={<StoreOrderDetails />} />
+
         </Route>
-        {/* </Route> */}
-        {/* </Route> */}
-        {/* dashboard */}
+
       </Routes>
     </>
   );

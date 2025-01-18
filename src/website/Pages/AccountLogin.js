@@ -27,8 +27,7 @@ export default function AccountLogin() {
       window.location.pathname = "/Home";
 
     } catch (err) {
-      setEmailErr(err.response.status);
-      console.log(emaillerr);
+      setEmailErr(err.response.data);
     }
   }
   return (
@@ -39,6 +38,7 @@ export default function AccountLogin() {
           Don't have an account yet?
           <Link to="/account/signup">Create Account</Link>
         </p>
+        <p className="text-danger">{emaillerr}</p>
         <form onSubmit={submit}>
           <input required
             value={form.email}

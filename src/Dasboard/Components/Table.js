@@ -29,26 +29,13 @@ export default function Table(props) {
   );
   const whichData =
     filteredDate.length > 0 || date !== "" ? filteredDate : filtered;
-  //get usernow
-  // async function getUsernow() {
-  //   try {
-  //     await Axios.get("user").then((data) => {
-  //       setUserNow(data.data.name);
-  //     });
-  //   } catch (err) {
-  //   } finally {
-  //     setLoadingUser(false);
-  //   }
-  // }
-  // useEffect(() => {
-  //   getUsernow();
-  // }, []);
+
   //handle delete
   async function handleDelete(id) {
     try {
       await Axios.delete(`${props.del}/${id}`);
       setItems(items.filter((user) => user.id !== id));
-    } catch (err) {}
+    } catch (err) { }
   }
 
   //get items

@@ -22,14 +22,13 @@ export default function TopCategories() {
         }`}
       key={key}
     >
-      <a href="/" className=" position-relative ">
-        <div className="w-100 h-100 imgeffect">
-          <img src={require('../../images/model.jpg')} alt="img" className="w-100 h-100" />
-          <p className="position-absolute bottom-0 text-white catpara">
-            {cat.productTypeName}
-          </p>
-        </div>
-      </a>
+      <div className="w-100 h-100 imgeffect">
+        <img src={require('../../images/model.jpg')} alt="img" className="w-100 h-100" />
+        <p className="position-absolute bottom-0 text-white catpara">
+          {cat.productTypeName}
+        </p>
+      </div>
+
     </div>
   ));
   return (

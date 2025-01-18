@@ -10,6 +10,7 @@ import { Axios } from "../Axios/axios";
 import { useSidebar } from "../Context/SidebarIsOpen";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
+import Cookie from "cookie-universal";
 
 export default function NewSidebar() {
   const [name, setName] = useState("");
@@ -17,7 +18,7 @@ export default function NewSidebar() {
   const [role, setRole] = useState("admin");
   const [loading, setLoading] = useState(false);
   const { isSidebarOpen, toggleSidebar } = useSidebar();
-  console.log(isSidebarOpen);
+  const cookie = Cookie();
   const showSidebarList = SidebarLinks.map(
     (link, key) =>
       link.role.includes(role) && (
@@ -40,27 +41,11 @@ export default function NewSidebar() {
         </NavLink>
       )
   );
-  //get user
-  // async function getUser() {
-  //   try {
-  //     await Axios.get("user").then((data) => {
-  //       setName(data.data.name);
-  //       setEmail(data.data.email);
-  //       setRole(data.data.role);
-  //     });
-  //   } catch (err) {
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
+
   async function handleLogout(e) {
     e.preventDefault();
-    await Axios.get("logout")
-      .then(() => (window.location.pathname = ""))
-      .catch((err) => console.log(err));
+    cookie.remove("CustomerAccount");
+    cookie.remove("CustomerId");
   }
 
   return loading ? (
@@ -88,26 +73,7 @@ export default function NewSidebar() {
             </div>
 
             <div>
-              <div
-                className="user overflow-hidden"
-                style={{ width: isSidebarOpen ? "100%" : "0" }}
-              >
-                <div className="info">
-                  <p className="name mb-1">{name}</p>
-                  <p className="email">{email}</p>
-                </div>
-                <div className="role">
-                  <p className="p-2 rounded-3">
-                    {role === "1995"
-                      ? "admin"
-                      : role === "2000"
-                      ? "User"
-                      : role === "1996"
-                      ? "writer"
-                      : "error"}
-                  </p>
-                </div>
-              </div>
+
               <button
                 type="submit"
                 onClick={handleLogout}

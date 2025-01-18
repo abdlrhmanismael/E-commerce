@@ -3,6 +3,7 @@ import {
   faList,
   faPlus,
   faShop,
+  faTruck,
   faUser,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -60,6 +61,12 @@ export const SidebarLinks = [
     name: "Add Product",
     link: "addproduct",
     icon: faPlus,
+    role: ["admin", "1996"],
+  },
+  {
+    name: "Orders",
+    link: "Orders",
+    icon: faTruck,
     role: ["admin", "1996"],
   },
   {

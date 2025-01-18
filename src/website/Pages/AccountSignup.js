@@ -43,7 +43,7 @@ export default function AccountSignup() {
       await axios.post("https://thisisanecommerce.runasp.net/api/Customer/CustomerRegister", form);
       window.location.pathname = "/account/login";
     } catch (err) {
-      setEmailErr(err.response.status);
+      setEmailErr(err.respons.data);
     }
   }
 
@@ -55,6 +55,8 @@ export default function AccountSignup() {
           Already Have Account?
           <Link to="/account/Login">Sign in</Link>
         </p>
+        <p className="text-danger">{emailErr}</p>
+
         <form onSubmit={submit}>
           <input
             id="firstName"

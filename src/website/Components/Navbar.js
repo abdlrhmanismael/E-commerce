@@ -13,36 +13,33 @@ import { Link } from "react-router-dom";
 import { Axios } from "../../Dasboard/Axios/axios";
 import { CartContext } from "../../Dasboard/Context/Cart";
 import Cookie from "cookie-universal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Navbar(props) {
   const windowwidth = useWindowWidth();
   const [search, setSearch] = useState(false);
   const refsearch = useRef();
-  const categoriesRef = useRef(null);
-  const dropRef = useRef(null);
   const [categories, setCategories] = useState([]);
-  const [trys, setrys] = useState([]);
-  const [products, setProducts] = useState([]);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCardOpen, setisCardOpen] = useState(false);
-  const [searchFilter, setSearchFilter] = useState("");
   const { cartitems, setCart } = useContext(CartContext);
   const cookie = Cookie();
   const id = cookie.get("CustomerId");
   const token = cookie.get("CustomerAccount");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [debouncedFilter, setDebouncedFilter] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   //get categorios
   useEffect(() => {
     Axios.get("/RefProductType/GetAll").then((data) => setCategories(data.data));
     Axios.get(`/cart/GetCartByCustomerID?customerID=${id}`).then((data) => setCart(data.data.cartItems));
   }, []);
-  const showCategories = categories.map((category, key) => (
-    <li className="text-black" key={key}>
-      {category.productTypeName}
-    </li>
-  ));
+
   const showSmallCategories = categories.map((category, key) => (
     <li className="text-black" key={key}>
       {category.productTypeName.toUpperCase()}
@@ -50,28 +47,7 @@ export default function Navbar(props) {
   ));
 
   // to hide search div in small and mdeuim screens
-  useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth > 990) {
-        if (isSearchOpen) {
-          setIsSearchOpen(false);
-          setSearch(true);
-        }
-      } else {
-        if (search) {
-          setSearch(false);
-          setIsSearchOpen(true);
-        }
-      }
-    }
-    const cookie = Cookie();
-    const token = cookie.get("CustomerAccount");
 
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [isSearchOpen, search]);
   const cartCounter = async (increase, product) => {
     if (increase === true) {
       try {
@@ -85,6 +61,10 @@ export default function Navbar(props) {
         setCart(cart.data.cartItems)
       } catch (err) {
         console.log(err);
+        toast.error(err.response.data, {
+          position: "bottom-left",
+        });
+
       }
     }
     else if (increase === false && product.quantity > 1) {
@@ -116,61 +96,42 @@ export default function Navbar(props) {
       }
     }
   }
-  function dropmenuaddclas() {
-    if (
-      !categoriesRef["current"].classList.contains("is-active") ||
-      !dropRef["current"].classList.contains("active")
-    ) {
-      setTimeout(() => {
-        categoriesRef["current"].classList.add("is-active");
-      }, 200);
-      dropRef["current"].classList.add("active");
-      dropRef["current"].classList.remove("opacity-0");
-    }
-  }
-  function dropmenuremoveclass() {
-    categoriesRef["current"].classList.remove("is-active");
-    dropRef["current"].classList.remove("active");
-    dropRef["current"].classList.add("opacity-0");
-  }
-  //GET SEARCH CONTENT
-  async function getSearch() {
-    let res = await Axios.get("/Product/GetAll");
-    setProducts(res.data);
-  }
 
-
+  // Debounce the search input
   useEffect(() => {
-    getSearch();
-  }, []);
+    const handler = setTimeout(() => {
+      setDebouncedFilter(searchFilter);
+    }, 1000); // 1 second delay
 
-  const filterSearch = searchFilter
-    ? products.filter((item) =>
-      item.title.toLowerCase().includes(searchFilter.toLowerCase())
-    )
-    : [];
+    return () => {
+      clearTimeout(handler); // Cleanup timeout on input change
+    };
+  }, [searchFilter]);
 
-  const showSearchFilter = filterSearch.map((product, key) => (
-    <div
-      className="search-card d-flex align-items-center col-12 col-md-6"
-      key={key}
-    >
-      <div>
-        <img
-          src={product.productImages[0].imageUrl}
-          alt="img"
-          width={40}
-          height={80}
-          style={{ objectFit: "cover" }}
-        />
-      </div>
-      <div className="ms-3">
-        <p className="text-secondary mb-0">e-commerce</p>
-        <p className="text-black mb-0">{product.name}</p>
-        <p className="text-black">{product.price} LE</p>
-      </div>
-    </div>
-  ));
+  // Fetch products based on the debounced filter
+  useEffect(() => {
+    if (debouncedFilter.trim() === "") {
+      setSearchResults([]); // Clear results if input is empty
+      return;
+    }
+
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await Axios.post(`/Product/search`, {
+          query: debouncedFilter,
+        });
+        setSearchResults(response.data.items);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [debouncedFilter]);
+
 
   return (
     <>
@@ -219,7 +180,7 @@ export default function Navbar(props) {
                 </div>
 
                 <div className="search-data mt-3">
-                  <div className="row">{showSearchFilter}</div>
+
                 </div>
               </div>
             </div>
@@ -231,7 +192,7 @@ export default function Navbar(props) {
                     <FontAwesomeIcon
                       icon={faMagnifyingGlass}
                       className=" me-3 navicon"
-                      onClick={() => setSearch(true)}
+                      onClick={() => setIsSearchOpen(true)}
                     />
                   </div>
                   <div>
@@ -437,7 +398,33 @@ export default function Navbar(props) {
                     value={searchFilter}
                   />
                 </div>
-                <div className="row">{showSearchFilter}</div>
+                <div className="row">
+                  {loading ? (
+                    <p>Loading...</p>
+                  ) : searchResults.length > 0 ? (
+                    searchResults.map((product) => (
+                      <a href={`/collection/${product.productID}`} className="col-12 mt-2 text-decoration-none text-black" key={product.id}>
+                        <div className="product-item d-flex">
+                          <div>
+                            <img
+                              src={product.productImages[0].imageUrl}
+                              alt="product"
+                              width="70px"
+                              height="70px"
+                              className="image-fluid"
+                            />
+                          </div>
+                          <div className="mx-2">
+                            <h5>{product.name}</h5>
+                            <p>{product.description}</p>
+                          </div>
+                        </div>
+                      </a>
+                    ))
+                  ) : (
+                    <p>No results found.</p>
+                  )}
+                </div>
               </div>
             </Offcanvas.Body>
           </Offcanvas>
@@ -473,9 +460,9 @@ export default function Navbar(props) {
                       <h1 className="text-black">{item.productName}</h1>
                       <div className="d-flex justify-content-between">
                         <div className="counter d-flex align-items-center">
-                          <span className="px-2 py-1 border border-1" onClick={() => cartCounter(true, item)}>+</span>
+                          <span className="px-2 py-1 border border-1 user-select-none" onClick={() => cartCounter(true, item)}>+</span>
                           <p className="mb-0 px-2">{item.quantity}</p>
-                          <span className="px-2 py-1 border border-1" onClick={() => cartCounter(false, item)}>-</span>
+                          <span className="px-2 py-1 border border-1 user-select-none" onClick={() => cartCounter(false, item)}>-</span>
                         </div>
                         <p className="text-secondary">{item.price}</p>
                       </div>
@@ -494,7 +481,9 @@ export default function Navbar(props) {
           </Offcanvas>
 
         </div>
-      </div>
+      </div >
+      <ToastContainer />
+
     </>
   );
 }
