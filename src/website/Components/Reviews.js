@@ -6,23 +6,6 @@ import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 
 export default function Reviews(props) {
-    const reviews = [
-        {
-            name: "John Doe",
-            review: "Amazing product! Highly recommend to everyone.",
-            rating: 5,
-        },
-        {
-            name: "Jane Smith",
-            review: "Great value for the price. Quality is top-notch!",
-            rating: 4,
-        },
-        {
-            name: "Michael Brown",
-            review: "Good overall experience, but shipping was slow.",
-            rating: 3,
-        },
-    ];
 
     return (
         <div className="container my-5">
