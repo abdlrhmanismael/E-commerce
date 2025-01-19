@@ -5,7 +5,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 
-export default function Reviews() {
+export default function Reviews(props) {
     const reviews = [
         {
             name: "John Doe",
@@ -40,12 +40,12 @@ export default function Reviews() {
                 }}
                 className="swiper-container"
             >
-                {reviews.map((review, index) => (
+                {props.reviews.map((review, index) => (
                     <SwiperSlide key={index} style={{ height: "300px" }}>
                         <div className="card h-100 shadow-sm">
                             <div className="card-body">
-                                <h5 className="card-title">{review.name}</h5>
-                                <p className="card-text">{review.review}</p>
+                                <h5 className="card-title">{review.customerID}</h5>
+                                <p className="card-text">{review.body}</p>
                                 <div className="text-warning">
                                     {"★".repeat(review.rating)}
                                     {"☆".repeat(5 - review.rating)}

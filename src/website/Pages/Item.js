@@ -83,6 +83,7 @@ export default function Item() {
         setERR(true);
       } else {
         setItem(res.data);
+        console.log(item);
       }
     } catch (error) {
       setERR(true);
@@ -188,7 +189,7 @@ export default function Item() {
           </div>
         </div>
       </div>
-      <Reviews />
+      <Reviews reviews={item.reviews} />
       <Footer />
       <ToastContainer />
     </>
